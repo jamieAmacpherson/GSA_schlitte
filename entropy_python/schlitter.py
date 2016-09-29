@@ -18,6 +18,7 @@
 from prody import *
 from pylab import *
 import MDAnalysis as mda
+from MDAnalysis.analysis.align import *
 import argparse
 import os.path
 import sys
@@ -53,6 +54,16 @@ parser.add_argument("-s", dest="pdbfile", required=True,
 args = parser.parse_args()
 
 #____________________________________________________________________________
+# remove rotational-translational motions from trajectory
+#____________________________________________________________________________
+def rmrt(topology, trajectory):
+    ref = mda.Universe(topology)
+    traj = mda.Universe(topology, trajectory)
+    rms_fit_trj(traj, ref, filename='rmsfit_traj.dcd')
+
+rmrt(args.pdbfile, args.dcdfile)
+
+#____________________________________________________________________________
 # covariance matrix
 #____________________________________________________________________________
 def covar(topology, trajectory):
@@ -65,8 +76,8 @@ def covar(topology, trajectory):
     ensemble.buildCovariance( traj )
     covar.covarmat = ensemble.getCovariance()
     
-covar(args.pdbfile, args.dcdfile)
-
+covar(args.pdbfile, 'rmsfit_traj.dcd')
+  
 #____________________________________________________________________________
 # mass matrix
 #____________________________________________________________________________
