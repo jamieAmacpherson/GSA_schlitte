@@ -1,2 +1,8 @@
 Schlitte: a comprehensive program to calculate entropic and enthalpic energies from MD simulations.
 
+Files:
+entropy_python  -->  entropy calculation using the Schlitter equation
+
+allost_pot_python  -->  allosteric potential calculation using Guarnera E. method
+
+papers  -->  bibtex file containing relevant references
