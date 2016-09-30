@@ -75,7 +75,7 @@ def covar(topology, trajectory):
     ensemble = EDA('trajectory')
     ensemble.buildCovariance( traj )
     mat = ensemble.getCovariance()
-    covar.mat = mat * 0.01 
+    covar.mat = mat 
     np.savetxt('covarmat.dat', covar.mat )
 
 covar(args.pdbfile, 'rmsfit_traj.dcd')
