@@ -74,8 +74,10 @@ def covar(topology, trajectory):
     traj.setAtoms(struct.calpha)
     ensemble = EDA('trajectory')
     ensemble.buildCovariance( traj )
-    covar.covarmat = ensemble.getCovariance()
-    
+    mat = ensemble.getCovariance()
+    covar.mat = mat * 0.01 
+    np.savetxt('covarmat.dat', covar.mat )
+
 covar(args.pdbfile, 'rmsfit_traj.dcd')
   
 #____________________________________________________________________________
@@ -84,7 +86,7 @@ covar(args.pdbfile, 'rmsfit_traj.dcd')
 def mass(topology, trajectory):
     system = mda.Universe(topology, trajectory)
     asel = system.select_atoms(' ( name CA ) ')
-    am = asel.masses
+    am = asel.masses * 1.6605e-27 # convert from atomic mass to kg
     masses = np.repeat(am, 3)
     mass.matrix = np.identity(len(masses)) * masses
 
@@ -96,17 +98,21 @@ mass(args.pdbfile, args.dcdfile)
 def entropy_ru(sigma, m):
     entropy_ru.S = LA.slogdet(1+ np.dot(sigma, m))[1]
     print "S' (reduced units): ", entropy_ru.S
-entropy_ru(covar.covarmat, mass.matrix)
+entropy_ru(covar.mat, mass.matrix)
 
 def entropy(sigma, m):
     h = 6.6260693e-34 / (2 * np.pi)  # J*s
-    k = 0.0000083144621  #J/(mol*K)
+    k = 1.380658e-23  #J/K
+    av = 6.0221367e23 # /mol
     T = 300  # Kelvin
     units = (k * T * math.exp(2) / (h**2))
-    entropy.Su = (k/2 * ((LA.slogdet((1 + (units * np.dot(sigma, m)))))[1]))
+    print "units:", units
+    print "logdet:", LA.slogdet((np.identity(len(m)) + (units * np.dot(sigma, m))))[1]
+    
+    entropy.Su = (k/2 * av * ((LA.slogdet((np.identity(len(m)) + (units * np.dot(sigma, m)))))[1]))
     print "S': ", entropy.Su, "J/(mol K)"
     
-entropy(covar.covarmat, mass.matrix)
+entropy(covar.mat, mass.matrix)
 
 
 
