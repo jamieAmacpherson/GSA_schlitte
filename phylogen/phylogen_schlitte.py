@@ -15,8 +15,7 @@
 #____________________________________________________________________________
 # Imports
 #____________________________________________________________________________
-from dendropy import Tree, TreeList, DnaCharacterMatrix, DataSet, TaxonNamespace
-
+import dendropy
 #____________________________________________________________________________
 # Read phylogenetic data
 #____________________________________________________________________________
@@ -25,9 +24,14 @@ t = 'consensus.tree'
 a = 'C1.P1.initial.fasta'
 
 def itree(tree, alignment):
-	itree.tree = dendropy.Tree.get(path=tree, schema="Newick")
+	itree.taxa = dendropy.TaxonNamespace()
+	itree.tree = dendropy.Tree.get(path=tree, schema="Newick", taxon_namespace=itree.taxa)
 	bipart = itree.tree.encode_bipartitions()
-	itree.aa1 = dendropy.ProteinCharacterMatrix.get(file=open(alignment), schema="fasta")
 
-for node in itree.tree:
-	node.edge.bipartition.leafset_taxa(itree.taxa)
+itree(t,a)
+
+def getbipart(tree):
+	for node in itree.tree:
+		biparts.append(node.edge.bipartition.leafset_taxa(itree.taxa)) 
+	matching = [s for s in biparts if 'KPYR_HUMAN/85-438' in s]
+
