@@ -28,7 +28,6 @@ def itree(tree, alignment):
 	itree.tree = dendropy.Tree.get(path=tree, schema="Newick")
 	bipart = itree.tree.encode_bipartitions()
 	itree.aa1 = dendropy.ProteinCharacterMatrix.get(file=open(alignment), schema="fasta")
-	
+
 for node in itree.tree:
-	biparts += ("{}: {}".format(
-		node.edge.bipartition.leafset_as_bitstring(), node.edge)) 
+	node.edge.bipartition.leafset_taxa(itree.taxa)
