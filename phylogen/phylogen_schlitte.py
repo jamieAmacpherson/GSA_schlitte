@@ -62,12 +62,9 @@ itree(t,a)
 def getbipart(tree):
 	getbipart.biparts=[]
 	for node in itree.tree:
-		if node.edge.bipartition.leafset_as_newick_string(itree.taxa).find("KPYR") != -1:
-			print node.edge.bipartition.leafset_as_newick_string(itree.taxa)
+		if 'KPYR HUMAN/85-438' in node.edge.bipartition.leafset_as_newick_string(itree.taxa):
+			getbipart.biparts.append(node.edge.bipartition.leafset_as_newick_string(itree.taxa))
 		
-		getbipart.biparts.append(node.edge.bipartition.leafset_as_newick_string(itree.taxa)) 
-	np.savetxt('bipartitions.dat', getbipart.biparts, delimiter='', fmt="%s")
-	getbipart.matching = [s for s in getbipart.biparts if 'KPYR' in s]
 	
 getbipart(t)
 
