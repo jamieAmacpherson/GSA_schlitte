@@ -31,8 +31,9 @@ def itree(tree, alignment):
 itree(t,a)
 
 def getbipart(tree):
+	getbiparts.biparts=[]
 	for node in itree.tree:
-		biparts.append(node.edge.bipartition.leafset_taxa(itree.taxa)) 
+		getbiparts.biparts.append(node.edge.bipartition.leafset_taxa(itree.taxa)) 
 	
 
 	matching = [s for s in biparts if 'KPYR_HUMAN/85-438' in s]
