@@ -19,7 +19,7 @@ import dendropy
 import argparse
 import os.path
 import sys
-
+import os
 #____________________________________________________________________________
 # Parse commandline arguments
 #____________________________________________________________________________
@@ -60,11 +60,11 @@ def itree(tree, alignment):
 itree(t,a)
 
 def getbipart(tree):
-	getbipart.biparts=[]
+	getbipart.biparts={}
 	for node in itree.tree:
-		if 'KPYR HUMAN/85-438' in node.edge.bipartition.leafset_as_newick_string(itree.taxa):
-			getbipart.biparts.append(node.edge.bipartition.leafset_as_newick_string(itree.taxa))
-		
+		getbipart.biparts.append(node.edge.bipartition.leafset_taxa(itree.taxa))
+	np.savetxt('bipartition.dat', getbipart.biparts, delimiter='', fmt="%s")
+	os.system('sed -n -e '/KPYR HUMAN/{p;n;}' bipartion.dat > human_bipart.dat')
 	
 getbipart(t)
 
