@@ -75,6 +75,8 @@ getbipart(t)
 def matchnewicks(newicks):
 	with open(newicks) as f:
 		matchnewicks.seqhead = f.read().splitlines()
+	for line in matchnewicks.seqhead:
+		matchnewicks.seqhead[line].split()
 
 matchnewicks('human_newicks.dat')
 
