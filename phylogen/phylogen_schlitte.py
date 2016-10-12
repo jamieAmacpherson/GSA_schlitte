@@ -72,4 +72,18 @@ def getbipart(tree):
 
 getbipart(t)
 
+def matchnewicks(newicks):
+	with open(newicks) as f:
+		matchnewicks.seqhead = f.read().splitlines()
+
+matchnewicks('human_newicks.dat')
+
+def twobytwo(t):
+	it = iter(t)
+	for x in it:
+		yield x, next(it)
+
+newheaders = dict(twobytwo(matchnewicks.seqhead))
+
+
 
