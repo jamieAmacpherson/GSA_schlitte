@@ -70,7 +70,7 @@ def getbipart(tree):
 
 getbipart(t)
 
-def matchnewicks(newicks):
+def matchnewicks(newicks, alignment):
 	with open(newicks) as f:
 		matchnewicks.seqhead = f.read().splitlines()
 	matchnewicks.headers=[]
@@ -78,8 +78,11 @@ def matchnewicks(newicks):
 	for line in range(0,9):	  # find a way to count the number of lines so that I dont hard-code the range
 		matchnewicks.headers.append(matchnewicks.seqhead[line].split('  '))
 	# match sequence headers to fasta sequence
+	fasta = open(alignment, 'r').read().splitlines()
 	for partition in matchnewicks.headers:
 		for headers in partition:
+			if headers in fasta:
+				print fasta
 
 
 
