@@ -74,18 +74,16 @@ def matchnewicks(newicks):
 	with open(newicks) as f:
 		matchnewicks.seqhead = f.read().splitlines()
 	matchnewicks.headers=[]
+	# split sequence headers up into a dictionary of lists
 	for line in range(0,9):	  # find a way to count the number of lines so that I dont hard-code the range
 		matchnewicks.headers.append(matchnewicks.seqhead[line].split('  '))
+	# match sequence headers to fasta sequence
+	for partition in matchnewicks.headers:
+		for headers in partition:
+
 
 
 matchnewicks('human_newicks.dat')
-
-def twobytwo(t):
-	it = iter(t)
-	for x in it:
-		yield x, next(it)
-
-newheaders = dict(twobytwo(matchnewicks.seqhead))
 
 
 
