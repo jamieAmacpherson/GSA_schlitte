@@ -78,15 +78,18 @@ def matchnewicks(newicks, alignment):
 	for line in range(0,9):	  # find a way to count the number of lines so that I dont hard-code the range
 		matchnewicks.headers.append(matchnewicks.seqhead[line].split('  '))
 	# match sequence headers to fasta sequence
-	fasta = open(alignment, 'r').read().splitlines()
+	fastaws = open(alignment, 'r').read().splitlines()
+	matchnewicks.fastaus = [x.strip('  ') for x in fastaws]
+	matchnewicks.fasta = [w.replace('_', ' ') for w in matchnewicks.fastaus]
 	for partition in matchnewicks.headers:
 		for headers in partition:
-			if headers in fasta:
-				print fasta
+			if headers in matchnewicks.fasta:
+				for sequence in matchnewicks.fasta:
+					print sequence
 
 
 
-matchnewicks('human_newicks.dat')
+matchnewicks('human_newicks.dat', 'alignment_file.fasta')
 
 
 
