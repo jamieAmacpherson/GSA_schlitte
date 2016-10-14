@@ -65,6 +65,7 @@ def getbipart(tree):
 	for node in itree.tree:
 		getbipart.biparts.append(node.edge.bipartition.leafset_taxa(itree.taxa))
 	np.savetxt('bipartition.dat', getbipart.biparts, delimiter='', fmt="%s")
+	os.system('chmod +wx format_newick.sh')
 	os.system('./format_newick.sh')
 
 getbipart(t)
@@ -72,8 +73,10 @@ getbipart(t)
 def matchnewicks(newicks):
 	with open(newicks) as f:
 		matchnewicks.seqhead = f.read().splitlines()
-	for line in matchnewicks.seqhead:
-		matchnewicks.seqhead[line].split()
+	matchnewicks.headers=[]
+	for line in range(0,9):	  # find a way to count the number of lines so that I dont hard-code the range
+		matchnewicks.headers.append(matchnewicks.seqhead[line].split('  '))
+
 
 matchnewicks('human_newicks.dat')
 
