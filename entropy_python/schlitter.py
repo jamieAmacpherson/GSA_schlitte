@@ -58,7 +58,7 @@ args = parser.parse_args()
 #____________________________________________________________________________
 def rmrt(topology, trajectory):
     ref = mda.Universe(topology)
-    traj = mda.Universe(topology, trajectory)
+    traj = mda.Universe(topology, trajectory
     rms_fit_trj(traj, ref, filename='rmsfit_traj.dcd')
 
 rmrt(args.pdbfile, args.dcdfile)
@@ -76,10 +76,19 @@ def covar(topology, trajectory):
     ensemble.buildCovariance( traj )
     mat = ensemble.getCovariance()
     covar.mat = mat 
-    np.savetxt('covarmat.dat', covar.mat )
+    np.savetxt('covarmat.dat', covar.mat)
+    # reshape the covariance matrix to 3 x (3n)^2/3
+    covar.matar = np.loadtxt('covarmat.dat')
+    if len(matar[0]) > 3:
+	    natoms = len(matar) / 3
+	    reshar = covar.matar.reshape(1, (3*natoms)**2)
+	    cleng = ((3*natoms)**2) / 3
+	    covar.matar = reshar.reshape(cleng, 3) * 0.01
+	    np.savetxt('covarmat.dat', covar.matar)
 
 covar(args.pdbfile, 'rmsfit_traj.dcd')
-  
+
+sys.exit()  
 #____________________________________________________________________________
 # mass matrix
 #____________________________________________________________________________
