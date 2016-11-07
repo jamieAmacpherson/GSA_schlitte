@@ -95,21 +95,16 @@ mass(args.pdbfile, args.dcdfile)
 #____________________________________________________________________________
 # entropy (reduced units)
 #____________________________________________________________________________
-def entropy_ru(sigma, m):
-    entropy_ru.S = LA.slogdet(1+ np.dot(sigma, m))[1]
-    print "S' (reduced units): ", entropy_ru.S
-entropy_ru(covar.mat, mass.matrix)
-
 def entropy(sigma, m):
-    h = 6.6260693e-34 / (2 * np.pi)  # J*s
+    hbar = 6.6260693e-34 / (2 * np.pi)  # J*s
     k = 1.380658e-23  #J/K
-    av = 6.0221367e23 # /mol
+    n = 6.0221367e23 # mol
     T = 300  # Kelvin
-    units = (k * T * math.exp(2) / (h**2))
+    be = (k * T * math.exp(2) / (hbar**2))
     print "units:", units
-    print "logdet:", LA.slogdet((np.identity(len(m)) + (units * np.dot(sigma, m))))[1]
+    print "logdet:", LA.slogdet((np.identity(len(m)) + (be * np.dot(sigma, m))))[1]
     
-    entropy.Su = (k/2 * av * ((LA.slogdet((np.identity(len(m)) + (units * np.dot(sigma, m)))))[1]))
+    entropy.Su = (k/2 * n * ((LA.slogdet((np.identity(len(m)) + (units * np.dot(sigma, m)))))[1]))
     print "S': ", entropy.Su, "J/(mol K)"
     
 entropy(covar.mat, mass.matrix)
