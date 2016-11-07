@@ -65,7 +65,7 @@ if test "$ac_use_profiling" = "yes"; then
     AC_DEFINE(PROFILING,1,[Define to compile with PROFILING settings.])
 fi
 
-# Output files
+# output files
 AC_CONFIG_FILES([Makefile src/Makefile tests/Makefile])
 AC_CONFIG_HEADERS([src/config.h])
 AC_OUTPUT

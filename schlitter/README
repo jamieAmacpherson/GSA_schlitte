@@ -1,0 +1,58 @@
+
+Schlitter
+---------
+Computes the Schlitter entropy
+
+References
+----------
+
+Install / Uninstall
+-------------------
+Run the 'bootstrap' shell script,
+set the environment GMXDIR variable (use setenv if you have t/csh)
+% export GMXDIR=/usr/local/gromacs
+and follow the general 'INSTALL' instructions.
+
+In case the Autoconf version is too old, run
+% autoconf --version
+and use the result to replace the version number in configure.ac
+AC_PREREQ([2.59])
+to reconfigure with the bootstrap script.
+
+The configuration option '--enable-debug' creates a debuggable binary,
+the option '--enable-profiling' enables profiling with 'gprof'.
+
+For automatic code documentation execute 'doxygen doxygen.cfg'
+in the 'src' directory.
+Documentation files are created in 'doc/html' and 'doc/latex'.
+The latex documentation is completed by executing 'make pdf' in the
+'doc/latex' directory, which creates 'refman.ps' and 'refman.pdf'.
+
+
+Usage
+-----
+
+
+
+-------------------------------------------------------------------------------
+
+Availability
+------------
+The program is made available under the GNU Public License for academic
+scientific purposes, under the condition that proper acknowledgement
+is made to the authors of the program in publications resulting from the use
+of the program.
+
+License
+-------
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+

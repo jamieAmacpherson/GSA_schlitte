@@ -4818,7 +4818,7 @@ $as_echo "#define PROFILING 1" >>confdefs.h
 
 fi
 
-# Output files
+# output files
 ac_config_files="$ac_config_files Makefile src/Makefile tests/Makefile"
 
 ac_config_headers="$ac_config_headers src/config.h"

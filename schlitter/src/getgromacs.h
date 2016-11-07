@@ -1,6 +1,6 @@
 /*===============================================================================
-getTRAJ.h : Read GROMOS96 trajectory file
-Copyright (C) 2008-2011 Jens Kleinjung
+getgromacs.h : Read GROMOS96 trajectory file
+Copyright (C) 2016 Jens Kleinjung
 Read the COPYING file for license information.
 ================================================================================*/
 

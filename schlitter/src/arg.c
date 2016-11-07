@@ -7,22 +7,11 @@ Read the COPYING file for license information.
 #include "config.h"
 #include "arg.h"
 
-#ifdef MPI
-#include <mpi.h>
-#endif
-extern int nodes;
-extern int my_rank;
-
 /*____________________________________________________________________________*/
 /** print version */
 static void print_version()
 {
-	
-	fprintf(stdout, "\n"
-					" __   __   __   __   *\n"
-					"|__) /  \\ |__) /__` \n"
-					"|    \\__/ |    .__/\n"); 
-
+	fprintf(stdout, "\nschlitter\n");
 	fprintf(stdout, "\n%s %s\n", PACKAGE, VERSION);
 }
 
@@ -30,18 +19,15 @@ static void print_version()
 /** print header */
 static void print_header()
 {
-    fprintf(stdout, "\nPOPS* : Parameter OPtimised Surface of proteins and nucleic acids\n");
+    fprintf(stdout, "\nschlitter: Application of the Schlitter formula to trajectories\n");
 }
 
 /*____________________________________________________________________________*/
 /** print license */
 static void print_license()
 {
-    fprintf(stdout, "\nCopyright (C) 2002-2016 Franca Fraternali (program author)\n"
-			"Copyright (C) 2008-2016 Jens Kleinjung (modular C code)\n"
-			"Copyright (C) 2002 Kuang Lin and Valerie Hindie (translation to C)\n"
-			"Copyright (C) 2002 Luigi Cavallo (parametrisation)\n"
-			"POPS* is free software and comes with ABSOLUTELY NO WARRANTY.\n"
+    fprintf(stdout, "\nCopyright (C) 2016 Jens Kleinjung, Jamie MacPherson, Franca Fraternali \n"
+			"'schlitter' is free software and comes with ABSOLUTELY NO WARRANTY.\n"
 			"You are welcome to redistribute it under certain conditions.\n"
 			"Read the COPYING file for distribution details.\n\n");
 }
@@ -50,87 +36,123 @@ static void print_license()
 /** print citation */
 static void print_citation()
 {
-	fprintf(stdout, "\nSchlitter entropy\n");
+	fprintf(stdout, "\nnone yet\n");
 }
 
 /*____________________________________________________________________________*/
 /** set defaults */
-static void set_defaults(Arg *arg)
+static void set_defaults(Arg *arg, Argpdb *argpdb)
 {
-    arg->trajInFileName = "";
+    arg->pdbInFileName = "";
+	arg->trajInFileName = 0; /* trajectory input file */ 
+	argpdb->coarse = 0; /* Calpha-only computation [0,1] */
+	argpdb->hydrogens = 0; /* hydrogens [0,1] */
+	arg->multiModel = 0; /* input with multiple models */
+	arg->silent = 0; /* suppress stdout */
+    arg->schlitterOutFileName = "schlitter.out";
 }
 
 /*____________________________________________________________________________*/
 /** check input */
-static void check_input(Arg *arg)
+static void check_input(Arg *arg, Argpdb *argpdb)
 {
-	if (strlen(arg->trajInFileName) == 0) {
-		fprintf(stderr, "No trajectory file name given\n");
-		exit(1);
-	}
+	if (strlen(arg->pdbInFileName) == 0)
+		Error("Invalid PDB file name");
+	assert(argpdb->coarse == 0 || argpdb->coarse == 1);
+    assert(argpdb->hydrogens == 0 || argpdb->hydrogens == 1);
+	assert(arg->multiModel == 0 || arg->multiModel == 1);
+	assert(strlen(arg->schlitterOutFileName) > 0);
 }
 
 /*____________________________________________________________________________*/
 /** print command line arguments */
-static void print_args(Arg *arg)
+static void print_args(Arg *arg, Argpdb *argpdb)
 {
     time_t now;
     time(&now);
 
     fprintf(stdout, "\ndate: %s", ctime(&now));
+    fprintf(stdout, \
+                    "pdb: %s\n"
+                    "traj: %s\n"
+                    "coarse: %d\n"
+                    "multiModel: %d\n",
+        arg->pdbInFileName, arg->trajInFileName, argpdb->coarse, 0);
+    fflush(stdout);
 }
 
 /*____________________________________________________________________________*/
 /** parse command line long_options */
-int parse_args(int argc, char **argv, Arg *arg)
+int parse_args(int argc, char **argv, Arg *arg, Argpdb *argpdb)
 {
 	int c;
-	const char usage[] = "\npops [--pdb ...] [OPTIONS ...]\n\
+	const char usage[] = "\nschlitter [--pdb ...] [--traj ...] [OPTIONS ...]\n\
 	 INPUT OPTIONS\n\
-	   --trajIn <trajectory input>\t(mode: optional , type: char  , default: void)\n\
+	   --pdb <PDB input>\t\t(mode: mandatory, type: char  , default: void)\n\
+	   --traj <trajectory input>\t(mode: optional , type: char  , default: void)\n\
+	 MODE OPTIONS\n\
+	   --coarse\t\t\t(mode: optional , type: no_arg, default: off)\n\
+	   --multiModel (disabled)\t(mode: optional , type: no_arg, default: off)\n\
+	   --silent\t\t\t(mode: optional , type: no_arg, default: off)\n\
 	 OUTPUT OPTIONS\n\
-	   --trajOut <POPS output>\t(mode: optional , type: char  , default: popstraj.out)\n\
+	   --schlitterOut <output>\t(mode: optional , type: char  , default: schlitter.out)\n\
 	 INFO OPTIONS\n\
 	   --cite\t\t\t(mode: optional , type: no_arg, default: off)\n\
 	   --version\t\t\t(mode: optional , type: no_arg, default: off)\n\
 	   --help\n";
 
-    if (argc < 2) {
+    if (argc < 3) {
 		print_header();
         fprintf(stderr, "%s", usage);
 		print_license();
         exit(0);
     }
 
-    set_defaults(arg);
+    set_defaults(arg, argpdb);
 
     /** long option definition */
     static struct option long_options[] = {
-        {"trajIn", required_argument, 0, 1},
-        {"trajOut", required_argument, 0, 2},
-        {"cite", no_argument, 0, 10},
-        {"version", no_argument, 0, 11},
-        {"help", no_argument, 0, 12},
+        {"pdb", required_argument, 0, 1},
+        {"traj", required_argument, 0, 2},
+        {"coarse", no_argument, 0, 3},
+        {"multiModel", no_argument, 0, 4},
+        {"schlitterOut", required_argument, 0, 6},
+        {"silent", no_argument, 0, 13},
+        {"cite", no_argument, 0, 25},
+        {"version", no_argument, 0, 26},
+        {"help", no_argument, 0, 27},
         {0, 0, 0, 0}
     };
 
     /** assign parameters to long options */
-    while ((c = getopt_long(argc, argv, "1:2:10 11 12", long_options, NULL)) != -1) {
+    while ((c = getopt_long(argc, argv, "1:2:3 4 5:6:13 25 26 27", long_options, NULL)) != -1) {
         switch(c) {
             case 1:
-                arg->trajInFileName = optarg;
+                arg->pdbInFileName = optarg;
                 break;
             case 2:
-                arg->trajOutFileName = optarg;
+                arg->trajInFileName = optarg;
                 break;
-            case 10:
+            case 3:
+                argpdb->coarse = 1;
+                break;
+            case 4:
+                arg->multiModel = 1;
+                break;
+            case 6:
+                arg->schlitterOutFileName = optarg;
+                break;
+            case 13:
+                arg->silent = 1;
+                break;
+            case 25:
                 print_citation();
                 exit(0);
-            case 11:
+            case 26:
 				print_version();
 				print_license();
                 exit(0);
-            case 12:
+            case 27:
                 fprintf(stderr, "%s", usage);
 				print_license();
                 exit(0);
@@ -141,9 +163,9 @@ int parse_args(int argc, char **argv, Arg *arg)
         }
     }
 
-	check_input(arg);
+	check_input(arg, argpdb);
     print_header();
-    print_args(arg);
+    print_args(arg, argpdb);
 
     return 0;
 }

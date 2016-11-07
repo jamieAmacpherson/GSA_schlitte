@@ -14,18 +14,27 @@ Read the COPYING file for license information.
 #include <string.h>
 #include <time.h>
 
+#include "argpdb.h"
+#include "error.h"
+
 /*____________________________________________________________________________*/
 /* structures */
 
 /* variables for commmand line arguments */
 typedef struct  
 {
+    FILE *pdbInFile;
+	char *pdbInFileName;
+    FILE *trajInFile;
 	char *trajInFileName;
-	char *trajOutFileName;
+	int silent;
+	int multiModel;
+    FILE *schlitterOutFile;
+    char *schlitterOutFileName;
 } Arg;
 
 /*____________________________________________________________________________*/
 /* prototypes */
-int parse_args(int argc, char **argv, Arg *arg);
+int parse_args(int argc, char **argv, Arg *arg, Argpdb *argpdb);
 
 #endif
