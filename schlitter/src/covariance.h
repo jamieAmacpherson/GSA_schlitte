@@ -1,0 +1,24 @@
+/*==============================================================================
+covariance.h : compute covariance of GSL matrix
+Copyright (C) 2016 Jens Kleinjung
+Read the COPYING file for license information.
+==============================================================================*/
+
+#ifndef COVARIANCE_H
+#define COVARIANCE_H
+
+#include <gsl/gsl_eigen.h>
+#include <gsl/gsl_matrix.h>
+#include <gsl/gsl_statistics_double.h>
+
+typedef struct
+{
+    gsl_vector *eigenval;
+    gsl_matrix *eigenvec;
+} Eigensys;
+
+void covariance(gsl_matrix *A, gsl_matrix *C);
+void eigensystem(gsl_matrix *C, Eigensys *eigensys);
+
+#endif
+

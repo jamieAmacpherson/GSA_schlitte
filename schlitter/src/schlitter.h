@@ -7,11 +7,18 @@ Copyright (C) 2016 Jens Kleinjung, Jamie MacPherson, Franca Fraternali
 #define SCHLITTER_H
 
 #include <assert.h>
+#include <gsl/gsl_matrix.h>
 #include <stdlib.h>
 #include <stdio.h>
 
 #include "arg.h"
+#include "argpdb.h"
+#include "config.h"
+#include "covariance.h"
+#include "error.h"
+#include "getpdb.h"
 #include "gettraj.h"
 #include "safe.h"
+#include "schlitter.h"
 
 #endif
