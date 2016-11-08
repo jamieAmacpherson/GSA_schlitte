@@ -28,6 +28,7 @@ import itertools as it
 from numpy import linalg as LA
 import math as math
 import array as ar
+import matplotlib.pyplot as plt
 
 #____________________________________________________________________________
 # Parse commandline arguments
@@ -58,7 +59,7 @@ args = parser.parse_args()
 #____________________________________________________________________________
 def rmrt(topology, trajectory):
     ref = mda.Universe(topology)
-    traj = mda.Universe(topology, trajectory
+    traj = mda.Universe(topology, trajectory)
     rms_fit_trj(traj, ref, filename='rmsfit_traj.dcd')
 
 rmrt(args.pdbfile, args.dcdfile)
@@ -79,16 +80,15 @@ def covar(topology, trajectory):
     np.savetxt('covarmat.dat', covar.mat)
     # reshape the covariance matrix to 3 x (3n)^2/3
     covar.matar = np.loadtxt('covarmat.dat')
-    if len(matar[0]) > 3:
-	    natoms = len(matar) / 3
+    if len(covar.matar[0]) > 3:
+	    natoms = len(covar.matar) / 3
 	    reshar = covar.matar.reshape(1, (3*natoms)**2)
 	    cleng = ((3*natoms)**2) / 3
 	    covar.matar = reshar.reshape(cleng, 3) * 0.01
-	    np.savetxt('covarmat.dat', covar.matar)
+	    np.savetxt('covarmat_undiag.dat', covar.matar)
 
 covar(args.pdbfile, 'rmsfit_traj.dcd')
 
-sys.exit()  
 #____________________________________________________________________________
 # mass matrix
 #____________________________________________________________________________
@@ -102,24 +102,37 @@ def mass(topology, trajectory):
 mass(args.pdbfile, args.dcdfile)
 
 #____________________________________________________________________________
-# entropy (reduced units)
+# entropy
 #____________________________________________________________________________
-def entropy(sigma, m):
+def entropy(sigma): 
+    # define constants
     hbar = 6.6260693e-34 / (2 * np.pi)  # J*s
     k = 1.380658e-23  #J/K
     n = 6.0221367e23 # mol
     T = 300  # Kelvin
     be = (k * T * math.exp(2) / (hbar**2))
-    print "units:", units
-    print "logdet:", LA.slogdet((np.identity(len(m)) + (be * np.dot(sigma, m))))[1]
-    
-    entropy.Su = (k/2 * n * ((LA.slogdet((np.identity(len(m)) + (units * np.dot(sigma, m)))))[1]))
-    print "S': ", entropy.Su, "J/(mol K)"
+    eigenvals, eigenvects = LA.eig(sigma * 0.01)
+    for s in eigenvals:
+	    deter = []
+	    s = s * 0.01
+	    dd = 1 + be * s
+	    deter.append(dd)
+    logdeter = np.sum(deter)
+    if logdeter < 0:
+	    logdeter = logdeter * -1
+    print logdeter
+    logdeter = log(logdeter)
+    entropy.S = 0.5 * k * n * logdeter
+    print "S': ", entropy.S, "J/(mol K)"
+    # plot eigenvectors of the covariance matrix
+    cumeigval = np.cumsum(eigenvals)
+    plt.plot(cumeigval, ".", cumeigval, 'r--')
+    plt.ylabel('Sum of eigenvalues')
+    plt.xlabel('Sum of eigenvector')
+    plt.grid()
+    plt.savefig('eigenval_spectrum.pdf')
+
+    #entropy.Su = (k/2 * n * ((LA.slogdet((np.identity(len(m)) + (be * sigma))))[1]))
+    #print "S': ", entropy.Su, "J/(mol K)"
     
 entropy(covar.mat, mass.matrix)
-
-
-
-
-
-
