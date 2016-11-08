@@ -29,6 +29,7 @@ from numpy import linalg as LA
 import math as math
 import array as ar
 import matplotlib.pyplot as plt
+import csv
 
 #____________________________________________________________________________
 # Parse commandline arguments
@@ -111,27 +112,49 @@ def entropy(sigma):
     n = 6.0221367e23 # mol
     T = 300  # Kelvin
     be = (k * T * math.exp(2) / (hbar**2))
+    #
+    #
     eigenvals, eigenvects = LA.eig(sigma * 0.01)
-    for s in eigenvals:
+    for key in eigenvals:
 	    deter = []
-	    dd = 1 + be * s
+	    dd = 1 + be * key
 	    deter.append(dd)
     logdeter = np.sum(deter)
+    #
+    #
     if logdeter < 0:
 	    logdeter = logdeter * -1
     print logdeter
+    #
+    #
     logdeter = log(logdeter)
     entropy.S = 0.5 * k * n * logdeter
     print "S': ", entropy.S, "J/(mol K)"
+    #
+    # Measure entropy summing over different number of eigenvalues
+    entropy.moderange={ }
+    for rmode in range(len(eigenvals)):
+	    tmp_arr = []
+	    rmdd = 1 + be * sum(eigenvals[0:rmode])
+	    rmlogdeter = log(rmdd)
+	    rmS = 0.5 * k * n * rmlogdeter
+	    tmp_arr.append(rmS)
+            entropy.moderange[rmode] = tmp_arr
+    with open('entropy_moderange.csv', 'w') as f:
+	    c = csv.writer(f)
+	    for key, value in entropy.moderange.items():
+		    c.writerow([key] + value)
+#	    
+ #  
     # plot eigenvectors of the covariance matrix
     cumeigval = np.cumsum(eigenvals)
-    plt.plot(cumeigval, 'b.', cumeigval, 'r--')
+    plt.plot(cumeigval, 'b .', cumeigval, 'r--')
     plt.ylabel('Sum of eigenvalues')
-    plt.xlabel('Sum of eigenvector')
+    plt.xlabel('Sum of eigenvectors')
     plt.grid()
     plt.savefig('eigenval_spectrum.pdf')
-
+#
     #entropy.Su = (k/2 * n * ((LA.slogdet((np.identity(len(m)) + (be * sigma))))[1]))
     #print "S': ", entropy.Su, "J/(mol K)"
     
-entropy(covar.mat, mass.matrix)
+entropy(covar.mat)
