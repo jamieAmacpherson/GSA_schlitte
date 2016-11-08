@@ -114,7 +114,6 @@ def entropy(sigma):
     eigenvals, eigenvects = LA.eig(sigma * 0.01)
     for s in eigenvals:
 	    deter = []
-	    s = s * 0.01
 	    dd = 1 + be * s
 	    deter.append(dd)
     logdeter = np.sum(deter)
@@ -126,7 +125,7 @@ def entropy(sigma):
     print "S': ", entropy.S, "J/(mol K)"
     # plot eigenvectors of the covariance matrix
     cumeigval = np.cumsum(eigenvals)
-    plt.plot(cumeigval, ".", cumeigval, 'r--')
+    plt.plot(cumeigval, 'b.', cumeigval, 'r--')
     plt.ylabel('Sum of eigenvalues')
     plt.xlabel('Sum of eigenvector')
     plt.grid()
