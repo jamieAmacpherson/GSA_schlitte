@@ -79,6 +79,7 @@ def covar(topology, trajectory):
     mat = ensemble.getCovariance()
     covar.mat = mat 
     np.savetxt('covarmat.dat', covar.mat)
+    
     # reshape the covariance matrix to 3 x (3n)^2/3
     covar.matar = np.loadtxt('covarmat.dat')
     if len(covar.matar[0]) > 3:
@@ -112,25 +113,25 @@ def entropy(sigma):
     n = 6.0221367e23 # mol
     T = 300  # Kelvin
     be = (k * T * math.exp(2) / (hbar**2))
-    #
-    #
-    eigenvals, eigenvects = LA.eig(sigma * 0.01)
+    
+    sigmap = (sigma * 1e-2) #* (1.6605e-27 * 12)
+    eigenvals, eigenvects = LA.eig(sigmap)
     for key in eigenvals:
 	    deter = []
 	    dd = 1 + be * key
 	    deter.append(dd)
     logdeter = np.sum(deter)
-    #
-    #
+    
+    
     if logdeter < 0:
 	    logdeter = logdeter * -1
     print logdeter
-    #
-    #
+    
+    
     logdeter = log(logdeter)
     entropy.S = 0.5 * k * n * logdeter
     print "S': ", entropy.S, "J/(mol K)"
-    #
+    
     # Measure entropy summing over different number of eigenvalues
     entropy.moderange={ }
     for rmode in range(len(eigenvals)):
@@ -144,8 +145,7 @@ def entropy(sigma):
 	    c = csv.writer(f)
 	    for key, value in entropy.moderange.items():
 		    c.writerow([key] + value)
-#	    
- #  
+   
     # plot eigenvectors of the covariance matrix
     cumeigval = np.cumsum(eigenvals)
     plt.plot(cumeigval, 'b .', cumeigval, 'r--')
@@ -153,7 +153,7 @@ def entropy(sigma):
     plt.xlabel('Sum of eigenvectors')
     plt.grid()
     plt.savefig('eigenval_spectrum.pdf')
-#
+    
     #entropy.Su = (k/2 * n * ((LA.slogdet((np.identity(len(m)) + (be * sigma))))[1]))
     #print "S': ", entropy.Su, "J/(mol K)"
     
