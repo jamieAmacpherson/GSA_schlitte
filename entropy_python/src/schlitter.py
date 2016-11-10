@@ -30,6 +30,7 @@ import math as math
 import array as ar
 import matplotlib.pyplot as plt
 import csv
+import mpmath as mp
 
 #____________________________________________________________________________
 # Parse commandline arguments
@@ -92,17 +93,18 @@ def covar(topology, trajectory):
     ensemble = EDA('trajectory')
     ensemble.buildCovariance( traj )
     mat = ensemble.getCovariance()
-    covar.mat = mat 
-    np.savetxt('covarmat.dat', covar.mat)
     
-    # reshape the covariance matrix to 3 x (3n)^2/3
-    covar.matar = np.loadtxt('covarmat.dat')
-    if len(covar.matar[0]) > 3:
-	    natoms = len(covar.matar) / 3
-	    reshar = covar.matar.reshape(1, (3*natoms)**2)
-	    cleng = ((3*natoms)**2) / 3
-	    covar.matar = reshar.reshape(cleng, 3) * 0.01
-	    np.savetxt('covarmat_undiag.dat', covar.matar)
+    # the covariance matrix is calculated in square angstrom (1 angstrom^2 = 0.01 nm^2)
+    covar.mat = mat * 0.01	# convert non-mass weighted covariance matrix from a^2 to nm^2  
+    np.savetxt('covarmat_nonMW.dat', covar.mat)
+    
+    # Mass-weight the covariance matrix, this involves a simple factoring of each of the elements
+    # by the atomic mass unit of carbon and hydrogen. The resulting units are covariance in: AMU*nm^2
+    covar.matMW = (covar.mat * 13.01864)	# weight the atoms by atomic mass of H + C
+    np.savetxt('covarmat_MW.dat', covar.matMW)
+    
+    covar.matMWSI = (covar.matMW * 1.66054e-45)	# convert covariance to SI units from U*nm^2 to kg*m^2
+    np.savetxt('covarmat_MW_SI.dat', covar.matMWSI)
 
 covar(args.pdbfile, 'rmsfit_traj.dcd')
 
@@ -121,41 +123,44 @@ mass(args.pdbfile, args.dcdfile)
 #____________________________________________________________________________
 # entropy
 #____________________________________________________________________________
+# calculate entropy using the Schlitter equation
+
 def entropy(sigma): 
-    # define constants
+    
+    # define constants all in SI units
     hbar = 6.6260693e-34 / (2 * np.pi)  # J*s
     k = 1.380658e-23  #J/K
     n = 6.0221367e23 # mol
     T = 300  # Kelvin
-    be = (k * T * math.exp(2) / (hbar**2))
     
-    sigmap = (sigma * 1e-2) #* (1.6605e-27 * 12)
-    eigenvals, eigenvects = LA.eig(sigmap)
+    # the Schlitter equation is S' = 0.5k_{B} \sum_{i=1}^{N=3} (1 + \frac{k_{B} T e^{2}}{\hbar^{2}} * \langle q \rangle) 
+    # determine the product of the prefactors first 
+    be = (k * T * math.exp(2) / (hbar**2))
+  
+    # diagonalize the mass-weighted matrix and calculate its eigenvalues  
+    eigenvals, eigenvects = LA.eig(sigma)
+    # 
     for key in eigenvals:
 	    deter = []
-	    dd = 1 + be * key
+	    dd = mp.log(1 + (be * key))
 	    deter.append(dd)
     logdeter = np.sum(deter)
-    
-    
-    if logdeter < 0:
-	    logdeter = logdeter * -1
     print logdeter
     
-    
-    logdeter = log(logdeter)
     entropy.S = 0.5 * k * n * logdeter
     
-    np.savetxt('entropy.dat', entropy.S)
+    f = open( 'entropy.dat', 'w' )
+    f.write( str(entropy.S) )
+    f.close()
+
     print "S': ", entropy.S, "J/(mol K)"
     
     # Measure entropy summing over different number of eigenvalues
     entropy.moderange={ }
     for rmode in range(len(eigenvals)):
 	    tmp_arr = []
-	    rmdd = 1 + be * sum(eigenvals[0:rmode])
-	    rmlogdeter = log(rmdd)
-	    rmS = 0.5 * k * n * rmlogdeter
+	    rmdd = mp.log(1 + be * sum(eigenvals[0:rmode]))
+	    rmS = 0.5 * k * n * rmdd
 	    tmp_arr.append(rmS)
             entropy.moderange[rmode] = tmp_arr
     with open('entropy_moderange.csv', 'w') as f:
@@ -171,8 +176,6 @@ def entropy(sigma):
     plt.grid()
     plt.savefig('eigenval_spectrum.pdf')
     
-    #entropy.Su = (k/2 * n * ((LA.slogdet((np.identity(len(m)) + (be * sigma))))[1]))
-    #print "S': ", entropy.Su, "J/(mol K)"
     
-entropy(covar.mat)
+entropy(covar.matMWSI)
 
