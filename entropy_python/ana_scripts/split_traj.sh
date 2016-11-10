@@ -38,3 +38,7 @@ let k=k+8000
 done
 exit
 
+for d in */ ; do
+	cat $d/entropy.dat >> time_entropy.dat
+done
+
