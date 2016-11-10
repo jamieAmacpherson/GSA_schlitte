@@ -13,6 +13,7 @@ Read the COPYING file for license information.
 
 typedef struct
 {
+	unsigned int eigendim;
     gsl_vector *eigenval;
     gsl_matrix *eigenvec;
 } Eigensys;
