@@ -35,32 +35,47 @@ import csv
 # Parse commandline arguments
 #____________________________________________________________________________
 # check if input file exists
+# there are two inputs: trajectory (.dcd) and topology (.pdb)
+# if either of those inputs are not supplied, or if the user doesn't invoke the
+# help flag the program will display an error message.
 def is_valid_file(arg):
     if not os.path.exists(arg):
         parser.error("The file %s does not exist! Use the --help flag for input options." % arg)
     else:
 	return arg
 
+# command line argument parser
 parser = argparse.ArgumentParser(description='Calculate entropy of MD trajectory')
 
+# the first argument is the trajectory file (.dcd) supplied after the -t flag
+# the trajectory file is saved as an object with the variable args.dcdfile
 parser.add_argument("-t", dest="dcdfile", required=True,
                     help="Free trajectory file (format: .dcd)",
                     type=lambda x: is_valid_file(x))
 
-
+# the second argument is the topology file (.pdb) supplied after the -s flag
+# this is saved an an obect with the variable args.pdbfile
 parser.add_argument("-s", dest="pdbfile", required=True,
                     help="Free structure file (format: .pdb)",
                     type=lambda x: is_valid_file(x))
 
-
+# the arguments are parsed 
 args = parser.parse_args()
 
 #____________________________________________________________________________
 # remove rotational-translational motions from trajectory
 #____________________________________________________________________________
+# to calculate the configurational entropy, we first remove the rotational-translational
+# motions from the trajectory. This is done by fitting the trajectory to the reference
+# structure (ie. the pdbfile). 
+
 def rmrt(topology, trajectory):
+    # define the reference structure as the topology file
     ref = mda.Universe(topology)
+    # define the trajectory as the .dcd file and link it to the topology symbolically
     traj = mda.Universe(topology, trajectory)
+    # fit the trajectory to the topology, removing rotational-translational motions
+    # and save the resulting trajectory.
     rms_fit_trj(traj, ref, filename='rmsfit_traj.dcd')
 
 rmrt(args.pdbfile, args.dcdfile)
@@ -130,6 +145,8 @@ def entropy(sigma):
     
     logdeter = log(logdeter)
     entropy.S = 0.5 * k * n * logdeter
+    
+    np.savetxt('entropy.dat', entropy.S)
     print "S': ", entropy.S, "J/(mol K)"
     
     # Measure entropy summing over different number of eigenvalues
@@ -158,3 +175,4 @@ def entropy(sigma):
     #print "S': ", entropy.Su, "J/(mol K)"
     
 entropy(covar.mat)
+
