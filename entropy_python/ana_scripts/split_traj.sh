@@ -6,29 +6,35 @@ then
 	exit 1
 fi
 
-python = '/usr/bin/python'
-schlitter = '/Users/Jamie/jm.software/development/entropy/GSA_schlitte/entropy_python/src/schlitter.py'
+schlitter='/home/jamie/jm.software/GSA_schlitte/entropy_python/src/schlitter.py'
 
 
-gmx trjconv -f $1 -s $2 -split 8000 
 
-let k=1
-let nst=9
+let k=8000
+let nst=300000
 
 while [ $k -le $nst ]
 do
 
 mkdir $k
-mv trajout$k.xtc $k
 
-mdconvert $k/$k.xtc -o $k/$k.dcd
+trjconv -f $1 -s $2 -b 0 -e $k -o $k/trajout$k.xtc <<EOF
+3
+EOF
+
+trjconv -f $1 -s $2 -b 0 -e 0 -o $k/topol$k.pdb <<EOF
+3
+EOF
+
+
+python ../mdconvert.py $k/trajout$k.xtc -o $k/$k.dcd
 
 cd $k 
-$python $schlitter $k.dcd $2 
+python $schlitter -t $k.dcd -s topol$k.pdb 
 cd ..
-rm $k/$k.xtc
+rm $k/trajout$k.xtc
 
-let k=k+1
+let k=k+8000
 done
 exit
 
