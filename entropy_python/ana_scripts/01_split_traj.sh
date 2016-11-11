@@ -16,29 +16,26 @@ let nst=500000
 while [ $k -le $nst ]
 do
 
+
+
+trjconv -f $1 -s $2 -b 0 -e $k -o trajout$k.xtc <<EOF
+3
+EOF
+
+trjconv -f $1 -s $2 -b 0 -e 0 -o topol$k.pdb <<EOF
+3
+EOF
+
 mkdir $k
+cd $k
+python ../../mdconvert.py ../trajout$k.xtc -o $k.dcd
 
-trjconv -f $1 -s $2 -b 0 -e $k -o $k/trajout$k.xtc <<EOF
-3
-EOF
+ 
+python $schlitter -t $k.dcd -s ../topol$k.pdb 
 
-trjconv -f $1 -s $2 -b 0 -e 0 -o $k/topol$k.pdb <<EOF
-3
-EOF
+rm ../trajout$k.xtc $k.dcd ../topol$k.pdb
 
-
-python ../mdconvert.py $k/trajout$k.xtc -o $k/$k.dcd
-
-cd $k 
-python $schlitter -t $k.dcd -s topol$k.pdb 
 cd ..
-rm $k/trajout$k.xtc
-
 let k=k+$3
 done
 exit
-
-for d in */ ; do
-	cat $d/entropy.dat >> time_entropy.dat
-done
-
