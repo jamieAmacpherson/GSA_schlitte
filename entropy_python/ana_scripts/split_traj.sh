@@ -1,8 +1,8 @@
 #!/bin/bash
-if [ $# -ne 2 ]
+if [ $# -ne 3 ]
 then
 	echo "Incorrect number of arguments..."
-	echo "Usage: split_resid.sh <trjectory (.xtc)> <topology (.pdb)>"
+	echo "Usage: split_resid.sh <trjectory (.xtc)> <topology (.pdb)> time step (ps)"
 	exit 1
 fi
 
@@ -10,8 +10,8 @@ schlitter='/home/jamie/jm.software/GSA_schlitte/entropy_python/src/schlitter.py'
 
 
 
-let k=8000
-let nst=300000
+let k=$3
+let nst=500000
 
 while [ $k -le $nst ]
 do
@@ -34,7 +34,7 @@ python $schlitter -t $k.dcd -s topol$k.pdb
 cd ..
 rm $k/trajout$k.xtc
 
-let k=k+8000
+let k=k+$3
 done
 exit
 
