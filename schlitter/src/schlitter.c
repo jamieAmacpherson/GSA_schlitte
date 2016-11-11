@@ -7,12 +7,34 @@ Copyright (C) 2016 Jens Kleinjung, Jamie MacPherson, Franca Fraternali
 #include "schlitter.h"
 
 /*____________________________________________________________________________*/
+/* compute entropy via Schlitter formula */
+/* S >= S' = 1/2 k_B ln det[1 + (k_B T e^2 / h_bar^2) M \sigma] */
+/* with S:entropy; k_B:Boltzmann k; T:Temperature; e:Euler e; h:Planck h;
+	M:mass matrix; \sigma:covariance matrix. */ 
+__inline__ static double schlitter(Eigensys *eigensys)
+{
+	unsigned int i;
+	double S_sch = 0.;
+	const double k_B = GSL_CONST_MKSA_BOLTZMANN;
+	const double T = 300;
+	const double e_sq = pow(M_E, 2);
+	const double h_bar_sq = pow(GSL_CONST_MKSA_PLANCKS_CONSTANT_HBAR, 2);
+	const double prefr = k_B * T * e_sq / h_bar_sq;
+
+	/* assuming eigenvalues are ordered;
+		skip the 6 d.o.f. of rigid body rotation/translation */
+	for (i = 0; i < eigensys->eigendim - 6; ++ i) {
+		S_sch += log(1 + (prefr * gsl_vector_get(eigensys->eigenval, i)));
+	} 
+
+	S_sch *= 0.5 * k_B;
+}
+
+/*____________________________________________________________________________*/
 int main(int argc, char *argv[])
 {
-	int i;
-
-	gsl_matrix *A = gsl_matrix_alloc (100, 100);
-	gsl_matrix *C = gsl_matrix_alloc (100, 100);
+	int i, j;
+	double S_sch; /* Schlitter entropy */
 
     /*____________________________________________________________________________*/
 	/* data structures and variables */
@@ -36,17 +58,35 @@ int main(int argc, char *argv[])
 	if (arg.trajInFileName) {
 		if (! arg.silent) fprintf(stdout, "Input trajectory\n");
 		read_gromos_traj(&traj, &arg, pdb.nAllAtom);
+	} else {
+		fprintf(stderr, "Need trajectory file\n");
+		exit(1);
 	}
 
     /*____________________________________________________________________________*/
+	/* create trajectory GSL matrix;
+		in each row: x1,y1,z1,x2,y2,z2,...
+		in each column: t1,t2,... */
+	/* trajectory matrix */
+	gsl_matrix *A = gsl_matrix_alloc(traj.nFrame,
+									(3 * traj.frame[i].nAtom));
+
+	/* assign coordinates to trajectory matrix */
+	for (i = 0; i < traj.nFrame; ++ i) {
+		for (j = 0; j < 3 * traj.frame[i].nAtom; ++ j) {
+			gsl_matrix_set(A, i, j,   traj.frame[i].trajatom[j].pos.x);
+			gsl_matrix_set(A, i, j+1, traj.frame[i].trajatom[j].pos.y);
+			gsl_matrix_set(A, i, j+2, traj.frame[i].trajatom[j].pos.z);
+		}
+	} 
+
+    /*____________________________________________________________________________*/
 	/* compute covariance matrix */
-    for (i = 0; i < traj.nFrame; ++ i) {
-		if (! arg.silent) {
-            (((i+1) % 50) != 0) ? fprintf(stdout, ".") : fprintf(stdout, "%d\n\t", (i + 1));
-			fflush(stdout);
-        }
-        assert(traj.frame[i].nAtom == pdb.nAllAtom);
-	}
+	/* assuming rigid body rotations/translations have already been removed
+			from the trajectory */
+	gsl_matrix *C = gsl_matrix_alloc((3 * traj.frame[i].nAtom), \
+									 (3 * traj.frame[i].nAtom));
+	covariance(A, C);
 
     /*____________________________________________________________________________*/
 	/* compute eigenvalues */
@@ -54,10 +94,7 @@ int main(int argc, char *argv[])
 
     /*____________________________________________________________________________*/
 	/* Schlitter entropy calculation */
-	/* S >= S' = 1/2 k_B ln det[1 + (k_B T e^2 / h_bar^2) M \sigma] */
-	/* with S:entropy; k_B:Boltzmann k; T:Temperature; e:Euler e; h:Planck h;
-		M:mass matrix; \sigma:covariance matrix. */ 
-
+	S_sch = schlitter(&eigensys);
 
     /*____________________________________________________________________________*/
 	/** free memory */
@@ -66,12 +103,20 @@ int main(int argc, char *argv[])
     free(pdb.atom);
     free(pdb.atomMap);
     free(pdb.sequence.res);
+
 	/* trajectory */
 	if (arg.trajInFileName) {
 		for (i = 0; i < (traj.nFrame + 1); ++ i)
 			free(traj.frame[i].trajatom);
 		free(traj.frame);
 	}
+
+	/* GSL matrices */
+	gsl_matrix_free(A);
+	gsl_matrix_free(C);
+
+	free(eigensys.eigenvec);
+	free(eigensys.eigenval);
 
     /*____________________________________________________________________________*/
 	/* terminate */
