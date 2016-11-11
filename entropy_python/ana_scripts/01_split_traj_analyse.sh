@@ -9,7 +9,7 @@ fi
 plot='/home/jamie/jm.software/GSA_schlitte/entropy_python/ana_scripts/split_traj_plot.R'
 
 let k=$1
-let nst=17500
+let nst=100000
 
 while [ $k -le $nst ]
 do
