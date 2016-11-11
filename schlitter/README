@@ -1,17 +1,24 @@
 
 Schlitter
 ---------
-Computes the Schlitter entropy
+Computes the Schlitter entropy of a given molecular structure (PDB format)
+and trajectory (Gromos96 format). The trajectory is expected to be
+free of rigid body motions, i.e. rotations and translations have been
+removed already.
+
 
 References
 ----------
+no references yet
+
 
 Install / Uninstall
 -------------------
-Run the 'bootstrap' shell script,
-set the environment GMXDIR variable (use setenv if you have t/csh)
-% export GMXDIR=/usr/local/gromacs
-and follow the general 'INSTALL' instructions.
+Run the './bootstrap' shell script to initialise the GNU Autotools.
+You need to have the GNU Scientific Library (GSL) installed.
+Standard GSL installations wil be detected by the './configure' script,
+otherwise use the '--with-gsl=<path>' switch upon configuration
+(run './configure --help' for all configuration options).
 
 In case the Autoconf version is too old, run
 % autoconf --version
@@ -32,6 +39,26 @@ The latex documentation is completed by executing 'make pdf' in the
 Usage
 -----
 
+schlitter [--pdb ...] [--traj ...] [OPTIONS ...]
+	 INPUT OPTIONS
+	   --pdb <PDB input>		(mode: mandatory, type: char  , default: void)
+	   --traj <trajectory input>	(mode: mandatory , type: char  , default: void)
+	 MODE OPTIONS
+	   --coarse			(mode: optional , type: no_arg, default: off)
+	   --silent			(mode: optional , type: no_arg, default: off)
+	 OUTPUT OPTIONS
+	   --schlitterOut <output>	(mode: optional , type: char  , default: schlitter.out)
+	 INFO OPTIONS
+	   --cite			(mode: optional , type: no_arg, default: off)
+	   --version			(mode: optional , type: no_arg, default: off)
+	   --help
+
+schlitter: Application of the Schlitter formula to trajectories
+
+Copyright (C) 2016 Jens Kleinjung, Jamie MacPherson, Franca Fraternali 
+'schlitter' is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Read the COPYING file for distribution details.
 
 
 -------------------------------------------------------------------------------

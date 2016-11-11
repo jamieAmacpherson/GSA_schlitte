@@ -1,5 +1,8 @@
 #! /bin/sh
+#valgrind ../src/schlitter \
 ../src/schlitter \
---traj test1.pdb \
+--pdb test_short_traj.pdb \
+--traj test_short_traj.g96 \
+--coarse \
 || exit 1
 
