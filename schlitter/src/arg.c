@@ -47,7 +47,6 @@ static void set_defaults(Arg *arg, Argpdb *argpdb)
 	arg->trajInFileName = 0; /* trajectory input file */ 
 	argpdb->coarse = 0; /* Calpha-only computation [0,1] */
 	argpdb->hydrogens = 0; /* hydrogens [0,1] */
-	arg->multiModel = 0; /* input with multiple models */
 	arg->silent = 0; /* suppress stdout */
     arg->schlitterOutFileName = "schlitter.out";
 }
@@ -60,7 +59,6 @@ static void check_input(Arg *arg, Argpdb *argpdb)
 		Error("Invalid PDB file name");
 	assert(argpdb->coarse == 0 || argpdb->coarse == 1);
     assert(argpdb->hydrogens == 0 || argpdb->hydrogens == 1);
-	assert(arg->multiModel == 0 || arg->multiModel == 1);
 	assert(strlen(arg->schlitterOutFileName) > 0);
 }
 
@@ -75,9 +73,8 @@ static void print_args(Arg *arg, Argpdb *argpdb)
     fprintf(stdout, \
                     "pdb: %s\n"
                     "traj: %s\n"
-                    "coarse: %d\n"
-                    "multiModel: %d\n",
-        arg->pdbInFileName, arg->trajInFileName, argpdb->coarse, 0);
+                    "coarse: %d\n",
+        arg->pdbInFileName, arg->trajInFileName, argpdb->coarse);
     fflush(stdout);
 }
 
@@ -92,7 +89,6 @@ int parse_args(int argc, char **argv, Arg *arg, Argpdb *argpdb)
 	   --traj <trajectory input>\t(mode: mandatory , type: char  , default: void)\n\
 	 MODE OPTIONS\n\
 	   --coarse\t\t\t(mode: optional , type: no_arg, default: off)\n\
-	   --multiModel (disabled)\t(mode: optional , type: no_arg, default: off)\n\
 	   --silent\t\t\t(mode: optional , type: no_arg, default: off)\n\
 	 OUTPUT OPTIONS\n\
 	   --schlitterOut <output>\t(mode: optional , type: char  , default: schlitter.out)\n\
@@ -115,7 +111,6 @@ int parse_args(int argc, char **argv, Arg *arg, Argpdb *argpdb)
         {"pdb", required_argument, 0, 1},
         {"traj", required_argument, 0, 2},
         {"coarse", no_argument, 0, 3},
-        {"multiModel", no_argument, 0, 4},
         {"schlitterOut", required_argument, 0, 6},
         {"silent", no_argument, 0, 13},
         {"cite", no_argument, 0, 25},
@@ -125,7 +120,7 @@ int parse_args(int argc, char **argv, Arg *arg, Argpdb *argpdb)
     };
 
     /** assign parameters to long options */
-    while ((c = getopt_long(argc, argv, "1:2:3 4 5:6:13 25 26 27", long_options, NULL)) != -1) {
+    while ((c = getopt_long(argc, argv, "1:2:3 5:6:13 25 26 27", long_options, NULL)) != -1) {
         switch(c) {
             case 1:
                 arg->pdbInFileName = optarg;
@@ -135,9 +130,6 @@ int parse_args(int argc, char **argv, Arg *arg, Argpdb *argpdb)
                 break;
             case 3:
                 argpdb->coarse = 1;
-                break;
-            case 4:
-                arg->multiModel = 1;
                 break;
             case 6:
                 arg->schlitterOutFileName = optarg;
