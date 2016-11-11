@@ -1,7 +1,5 @@
-library(ggplot2)
-
 cat = read.table("time_entropies.dat")
-cat1 = as.data.frame(cbind(as.data.frame(c(1: nrow(cat))), (cat$V1 / 1)))
+cat1 = as.data.frame(cbind(as.data.frame(c(1: nrow(cat)) * 0.5), (cat$V1)))
 names(cat1) = c("timestep", "entropy")
 
 pdf("plot_entropies.pdf")
