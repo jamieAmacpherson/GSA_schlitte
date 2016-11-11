@@ -98,15 +98,15 @@ def covar(topology, trajectory):
     
     # the covariance matrix is calculated in square angstrom (1 angstrom^2 = 0.01 nm^2)
     covar.mat = mat * 0.01	# convert non-mass weighted covariance matrix from a^2 to nm^2  
-    np.savetxt('covarmat_nonMW.dat', covar.mat)
+#    np.savetxt('covarmat_nonMW.dat', covar.mat)
     
     # Mass-weight the covariance matrix, this involves a simple factoring of each of the elements
     # by the atomic mass unit of carbon and hydrogen. The resulting units are covariance in: AMU*nm^2
     covar.matMW = (covar.mat * 13.01864)	# weight the atoms by atomic mass of H + C (united atom force field)
-    np.savetxt('covarmat_MW.dat', covar.matMW)
+#    np.savetxt('covarmat_MW.dat', covar.matMW)
     
     covar.matMWSI = (covar.matMW * 1.66054e-45)	# convert covariance to SI units from U*nm^2 to kg*m^2
-    np.savetxt('covarmat_MW_SI.dat', covar.matMWSI)
+#    np.savetxt('covarmat_MW_SI.dat', covar.matMWSI)
 
 covar(args.pdbfile, 'rmsfit_traj.dcd')
 
@@ -168,18 +168,18 @@ def entropy(sigma):
 	    tmp_arr.append(rmS)
             entropy.moderange[rmode] = tmp_arr
     
-    with open('entropy_moderange.csv', 'w') as f:
-	    c = csv.writer(f)
-	    for key, value in entropy.moderange.items():
-		    c.writerow([key] + value)
+#    with open('entropy_moderange.csv', 'w') as f:
+#	    c = csv.writer(f)
+#	    for key, value in entropy.moderange.items():
+#		    c.writerow([key] + value)
    
     # plot eigenvectors of the covariance matrix
-    cumeigval = np.cumsum(eigenvals)
-    plt.plot(cumeigval, 'b .', cumeigval, 'r--')
-    plt.ylabel('Sum of eigenvalues')
-    plt.xlabel('Sum of eigenvectors')
-    plt.grid()
-    plt.savefig('eigenval_spectrum.pdf')
+#    cumeigval = np.cumsum(eigenvals)
+#    plt.plot(cumeigval, 'b .', cumeigval, 'r--')
+#    plt.ylabel('Sum of eigenvalues')
+#    plt.xlabel('Sum of eigenvectors')
+#    plt.grid()
+#    plt.savefig('eigenval_spectrum.pdf')
     
     
 entropy(covar.matMWSI)
