@@ -1,8 +1,8 @@
 #!/bin/bash
-if [ $# -ne 3 ]
+if [ $# -ne 4 ]
 then
 	echo "Incorrect number of arguments..."
-	echo "Usage: split_resid.sh <trjectory (.xtc)> <topology (.pdb)> time step (ps)"
+	echo "Usage: split_resid.sh <trjectory (.xtc)> <topology (.pdb)> <time step (ps)> <index file (.ndx)>"
 	exit 1
 fi
 
@@ -18,12 +18,12 @@ do
 
 
 
-trjconv -f $1 -s $2 -b 0 -e $k -o trajout$k.xtc <<EOF
-3
+trjconv -f $1 -s $2 -b 0 -e $k -o trajout$k.xtc -n $4 <<EOF
+0
 EOF
 
-trjconv -f $1 -s $2 -b 0 -e 0 -o topol$k.pdb <<EOF
-3
+trjconv -f $1 -s $2 -b 0 -e 0 -o topol$k.pdb -n $4 <<EOF
+0
 EOF
 
 mkdir $k
