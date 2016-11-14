@@ -77,9 +77,9 @@ int read_gromos_traj(Traj *traj, Arg *arg, int protEnd)
 				== 3) {
 
 				/* convert from nm to A */
-				traj->frame[traj->nFrame].trajatom[*pnAtom].pos.x *= 10;
-				traj->frame[traj->nFrame].trajatom[*pnAtom].pos.y *= 10;
-				traj->frame[traj->nFrame].trajatom[*pnAtom].pos.z *= 10;
+				//traj->frame[traj->nFrame].trajatom[*pnAtom].pos.x *= 10;
+				//traj->frame[traj->nFrame].trajatom[*pnAtom].pos.y *= 10;
+				//traj->frame[traj->nFrame].trajatom[*pnAtom].pos.z *= 10;
 
 				/* count atoms in this frame */
 				++ *pnAtom;
