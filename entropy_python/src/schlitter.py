@@ -73,10 +73,10 @@ args = parser.parse_args()
 def rmrt(topology, trajectory):
     # define the reference structure as the topology file
     ref = mda.Universe(topology)
-    
+#    
     # define the trajectory as the .dcd file and link it to the topology symbolically
     traj = mda.Universe(topology, trajectory)
-    
+#    
     # fit the trajectory to the topology, removing rotational-translational motions
     # and save the resulting trajectory.
     rms_fit_trj(traj, ref, filename='rmsfit_traj.dcd')
@@ -95,16 +95,16 @@ def covar(topology, trajectory):
     ensemble = EDA('trajectory')
     ensemble.buildCovariance( traj )
     mat = ensemble.getCovariance()
-    
+#    
     # the covariance matrix is calculated in square angstrom (1 angstrom^2 = 0.01 nm^2)
     covar.mat = mat * 0.01	# convert non-mass weighted covariance matrix from a^2 to nm^2  
 #    np.savetxt('covarmat_nonMW.dat', covar.mat)
-    
+#    
     # Mass-weight the covariance matrix, this involves a simple factoring of each of the elements
     # by the atomic mass unit of carbon and hydrogen. The resulting units are covariance in: AMU*nm^2
     covar.matMW = (covar.mat * 13.01864)	# weight the atoms by atomic mass of H + C (united atom force field)
 #    np.savetxt('covarmat_MW.dat', covar.matMW)
-    
+#    
     covar.matMWSI = (covar.matMW * 1.66054e-45)	# convert covariance to SI units from U*nm^2 to kg*m^2
 #    np.savetxt('covarmat_MW_SI.dat', covar.matMWSI)
 
@@ -128,37 +128,33 @@ mass(args.pdbfile, args.dcdfile)
 # calculate entropy using the Schlitter equation
 
 def entropy(sigma): 
-    
+#    
     # define constants all in SI units
     hbar = 6.6260693e-34 / (2 * np.pi)  # J*s
     k = 1.380658e-23  #J/K
     n = 6.0221367e23 # mol
     T = 300  # Kelvin
-    
+#    
     # the Schlitter equation is S' = 0.5k_{B} \sum_{i=1}^{N=3} (1 + \frac{k_{B} T e^{2}}{\hbar^{2}} * \langle q \rangle) 
     # determine the product of the prefactors first 
     be = (k * T * math.exp(2) / (hbar**2))
-  
+    entropy.be = be
     # diagonalize the mass-weighted matrix and calculate its eigenvalues  
     eigenvals, eigenvects = LA.eig(sigma)
-    
-    # for each eigenvector, calculate the inner product of the Schlitter equation and sum over all eigenvectors
-    for key in eigenvals:
-	    deter = []
-	    dd = mp.log(1 + (be * key))	# natural log (using mpmath module - enables long float operations) 
-	    deter.append(dd)
-    logdeter = np.sum(deter)
-    
-    # multiply the log inner product by the Boltzmann constant  
+    eigenvals = eigenvals[:len(eigenvals)-6]
+    entropy.eigenvals = eigenvals
+    #
+    dd = log(1 + (be * eigenvals))
+    logdeter = np.sum(dd)
     entropy.S = 0.5 * k * n * logdeter
-    
+#    
     # write the calculated entropy to an output file
     f = open( 'entropy.dat', 'w' )
     f.write( str(entropy.S) )
     f.close()
-
+#
     print "S': ", entropy.S, "J/(mol K)"
-    
+#    
     # Measure entropy summing over different number of eigenvalues
     entropy.moderange={ }
     for rmode in range(len(eigenvals)):

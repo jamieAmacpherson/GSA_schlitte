@@ -6,7 +6,7 @@ then
 	exit 1
 fi
 
-plot='/home/jamie/jm.software/GSA_schlitte/entropy_python/ana_scripts/split_traj_plot.R'
+plot='/Users/Jamie/jm.software/development/entropy/GSA_schlitte/entropy_python/ana_scripts/split_traj_plot.R'
 
 let k=$1
 let nst=$2
