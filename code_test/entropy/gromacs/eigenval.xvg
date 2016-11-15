@@ -1,0 +1,46 @@
+# This file was created Tue Nov 15 17:58:32 2016
+# Created by:
+#                   :-) GROMACS - gmx covar, VERSION 5.1.1 (-:
+# 
+# Executable:   /opt/local/bin/gmx
+# Data prefix:  /opt/local
+# Command line:
+#   gmx covar -f ../../test_trajectory/decaA_1.xtc -s ../../test_trajectory/decaA.pdb -mwa -ascii MW_covar.dat
+# gmx covar is part of G R O M A C S:
+#
+# Gromacs Runs One Microsecond At Cannonball Speeds
+#
+@    title "Eigenvalues of the covariance matrix"
+@    xaxis  label "Eigenvector index"
+@    yaxis  label "(u nm\S2\N)"
+@TYPE xy
+         1 0.291199
+         2 0.0990812
+         3 0.0299812
+         4 0.02479
+         5 0.0220636
+         6 0.018039
+         7 0.0139998
+         8 0.0099502
+         9 0.00735439
+        10 0.00497375
+        11 0.00430519
+        12 0.00336366
+        13 0.00272319
+        14 0.00236151
+        15 0.00178881
+        16 0.00167108
+        17 0.000611672
+        18 0.000363508
+        19 0.000255397
+        20 0.000184276
+        21 0.000160509
+        22 0.000125353
+        23 0.000117137
+        24 9.80635e-05
+        25 2.30597e-08
+        26 7.31442e-09
+        27 4.34298e-09
+        28 9.5058e-10
+        29 -6.46956e-09
+        30 -8.68581e-09

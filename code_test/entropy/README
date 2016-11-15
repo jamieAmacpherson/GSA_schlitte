@@ -1,0 +1,7 @@
+For testing purposes, code will be executed on a 1ns simulation of a deca-alanine helical peptide in explicit SPC water, at 300K. Deposit the following files in the relevant directories for code comparison:
+
+i) The mass-weighted covariance matrix
+
+ii) Eigenvalues
+
+iii) Entropy value
