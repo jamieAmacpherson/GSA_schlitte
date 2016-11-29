@@ -44,7 +44,9 @@ __inline__ static double schlitter(Eigensys *eigensys)
 {
 	unsigned int i;
 	FILE *outFile;
-	double S_sch = 0.; /* Schlitter entropy */
+	FILE *csoutFile;
+	double S_sch = 0.; /* Schlitter entropy per eigenvalue */
+	double S_sch_cumsum = 0.; /* cumulative sum of Schlitter entropy */
 	const double k_B = GSL_CONST_MKSA_BOLTZMANN; /* J K^{-1} */
 	const double T = 300; /* K */
 	const double e_sq = pow(M_E, 2);
@@ -56,26 +58,28 @@ __inline__ static double schlitter(Eigensys *eigensys)
 	const double cf_nmsq_msq = 1e-18; /* conversion factor from nm^2 to m^2 */
 	double ev = 0.;
 
-	outFile = safe_open("schlitter.dat", "w");
+	outFile = safe_open("S_sch_C.dat", "w");
+	csoutFile = safe_open("S_sch_cumsum_C.dat", "w");
 
 	/* assuming eigenvalues are ordered;
 		skip the 6 d.o.f. of rigid body rotation/translation */
 	for (i = 0; i < eigensys->eigendim - 6; ++ i) {
 		ev = gsl_vector_get(eigensys->eigenval, i);
 		if (ev > 0) {
-			S_sch += log(1 + (prefr * \
+			S_sch = 0.5 * k_B * log(1 + (prefr * \
 					  cf_au_kg * m_CH * \
 					  ev * cf_nmsq_msq));
-			fprintf(outFile, "%d\t%lf\t%e\t%lf\n",
-				i, ev, cf_au_kg * m_CH * ev * cf_nmsq_msq, S_sch);
+			fprintf(outFile, "%d\t%lf\n", i, S_sch);
+
+			S_sch_cumsum += S_sch;
+			fprintf(csoutFile, "%d\t%lf\n", i, S_sch);
 		} else {
 			break;
 		}
 	}
 
-	S_sch *= 0.5 * k_B;
-
 	fclose(outFile);
+	fclose(csoutFile);
 }
 
 /*____________________________________________________________________________*/
@@ -164,11 +168,11 @@ int main(int argc, char *argv[])
 	eigensystem(C, &eigensys);
 
 #ifdef DEBUG
-	eigenvalOut = safe_open("eigenval.dat", "w");
+	eigenvalOut = safe_open("S_sch_eigenval_C.dat", "w");
     gsl_vector_fprintf (eigenvalOut, eigensys.eigenval, "%f");
 	fclose(eigenvalOut);
 
-	eigenvecOut = safe_open("eigenvec.dat", "w");
+	eigenvecOut = safe_open("S_sch_eigenvec_C.dat", "w");
     gsl_matrix_fprintf(eigenvecOut, eigensys.eigenvec, "%f");
 	fclose(eigenvecOut);
 #endif

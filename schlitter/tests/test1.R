@@ -9,8 +9,12 @@
 dat = read.table("traj.dat");
 ## covariance matrix
 dat.cov = cov(dat);
+write.table(dat.cov, file = "covar_R.dat", quote = FALSE, col.names = FALSE);
+
 ## eigen system
 dat.eigen =  eigen(dat.cov);
+write.table(dat.eigen$value, file = "S_sch_eigenval_R.dat", quote = FALSE, col.names = FALSE);
+write.table(dat.eigen$vector, file = "S_sch_eigenvec_R.dat", quote = FALSE, col.names = FALSE);
 
 #_______________________________________________________________________________
 ## Schlitter entropy
@@ -35,10 +39,9 @@ S_sch = sapply(dat.eigen$values[1:eval_lim], function(x) {
 		return(log(1 + (prefr *  cf_au_kg * m_CH * x * cf_nmsq_msq)));
 	}
 )
+write.table(S_sch, file = "S_sch_R.dat", quote = FALSE, col.names = FALSE);
 
 S_sch.cumsum = cumsum(S_sch);
-
 plot(1:eval_lim, S_sch.cumsum);
-
-write.table(S_sch.cumsum, file = "S_sch_cumsum.dat", quote = FALSE, col.names = FALSE);
+write.table(S_sch.cumsum, file = "S_sch_cumsum_R.dat", quote = FALSE, col.names = FALSE);
 
