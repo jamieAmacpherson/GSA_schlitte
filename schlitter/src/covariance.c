@@ -15,26 +15,35 @@ Read the COPYING file for license information.
    3. normalise with the 1/(n-1) prefactor. */
 void cov(gsl_matrix *A, gsl_matrix *C)
 {
+	unsigned int i, j;
+	double colsum, colmean;
 	/* 1. centre the matrix 'A' columns by subtracting the column mean */
-	/* 'As': scaled matrix 'A' */
-	gsl_matrix *As = gsl_matrix_alloc(A->size1, A->size2);
-	/* columns vector has length 'time steps' */
-	gsl_vector *ci = gsl_vector_alloc(A->size2);
-	/* for all 
-	for (i = 0; i < A->size1; ++ i) {
-		gsl_vector_view c_i = gsl_matrix_column(A, i);
-		/* and each other coordinate j */
-		for (j = i; j < A->size2; ++ j) {
+	/* 'Ac': centred matrix 'A' */
+	gsl_matrix *Ac = gsl_matrix_alloc(A->size1, A->size2);
+	/* column vector has length 'time steps' */
+	gsl_vector *cj = gsl_vector_alloc(A->size2);
+	/* for all columns */
+	for (j = 0; j < A->size2; ++ j) {
+		gsl_vector_view c_j = gsl_matrix_column(A, j);
+		/* compute column mean */
+		for (i = 0, colsum = 0; i < A->size1; ++ i) {
+			colsum += gsl_vector_get(&(c_j.vector), i);
+		}
+		colmean = colsum / A->size1;
 
-	
+		/* assign centred column A[ ,j] to Ac[ ,j] */
+		for (i = 0; i < A->size1; ++ i) {
+			gsl_matrix_set(Ac, i, j, gsl_matrix_get(A, i, j) - colmean);
+		}
+	}
 
 	/* 2. compute the cross product 'A x B' */
 	/* A x B: self-multiplication of A */
-	gsl_matrix *B = A;
+	gsl_matrix *Bc = Ac;
 
 	/* the crossproduct 'DGEMM' in BLAS:
 		C := alpha * op(A) * op(B) + beta * C */
-	gsl_blas_dgemm(CblasNoTrans, CblasTrans, 1., A, B, 0., C);
+	gsl_blas_dgemm(CblasNoTrans, CblasTrans, 1., Ac, Bc, 0., C);
 
 	/* 3. normalise with the 1/(NROW(A)-1) prefactor. */
 	const double x = 1 / (A->size1 - 1);
