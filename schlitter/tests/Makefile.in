@@ -419,10 +419,11 @@ top_srcdir = @top_srcdir@
 # #===============================================================================
 #
 noinst_DATA = \
-	test1.pdb
+	decaA.pdb \
+	decaA_1.g96
 
 noinst_SCRIPTS = \
-	test1.sh
+	test_decaA.sh
 
 EXTRA_DIST = $(noinst_DATA) $(noinst_SCRIPTS)
 TESTS = $(noinst_SCRIPTS)
@@ -607,9 +608,9 @@ recheck: all
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
-test1.sh.log: test1.sh
-	@p='test1.sh'; \
-	b='test1.sh'; \
+test_decaA.sh.log: test_decaA.sh
+	@p='test_decaA.sh'; \
+	b='test_decaA.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

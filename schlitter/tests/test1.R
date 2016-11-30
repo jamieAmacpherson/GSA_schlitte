@@ -5,6 +5,14 @@
 #===============================================================================
 
 #_______________________________________________________________________________
+## fast covariance function
+cov2 = function(x)
+{
+	# 'scale' is used here to centre columnes (subtract column mean)
+	1/(NROW(x)-1) * crossprod(scale(x, TRUE, FALSE))
+}
+
+#_______________________________________________________________________________
 ## read trajectory
 dat = read.table("traj.dat");
 ## covariance matrix

@@ -3,10 +3,11 @@
 # #===============================================================================
 #
 noinst_DATA = \
-	test1.pdb
+	decaA.pdb \
+	decaA_1.g96
 
 noinst_SCRIPTS = \
-	test1.sh
+	test_decaA.sh
 
 EXTRA_DIST = $(noinst_DATA) $(noinst_SCRIPTS)
 

@@ -8,6 +8,41 @@ Read the COPYING file for license information.
 
 /*____________________________________________________________________________*/
 /* compute covariance matrix C from input matrix A */
+/* using the following R implementation as example:
+	1/(NROW(A)-1) * crossprod(scale(A, TRUE, FALSE)) */
+/* 1. centre the matrix 'A' columns by subtracting the column mean;
+   2. compute the cross product 'A x A';
+   3. normalise with the 1/(n-1) prefactor. */
+void cov(gsl_matrix *A, gsl_matrix *C)
+{
+	/* 1. centre the matrix 'A' columns by subtracting the column mean */
+	/* 'As': scaled matrix 'A' */
+	gsl_matrix *As = gsl_matrix_alloc(A->size1, A->size2);
+	/* columns vector has length 'time steps' */
+	gsl_vector *ci = gsl_vector_alloc(A->size2);
+	/* for all 
+	for (i = 0; i < A->size1; ++ i) {
+		gsl_vector_view c_i = gsl_matrix_column(A, i);
+		/* and each other coordinate j */
+		for (j = i; j < A->size2; ++ j) {
+
+	
+
+	/* 2. compute the cross product 'A x B' */
+	/* A x B: self-multiplication of A */
+	gsl_matrix *B = A;
+
+	/* the crossproduct 'DGEMM' in BLAS:
+		C := alpha * op(A) * op(B) + beta * C */
+	gsl_blas_dgemm(CblasNoTrans, CblasTrans, 1., A, B, 0., C);
+
+	/* 3. normalise with the 1/(NROW(A)-1) prefactor. */
+	const double x = 1 / (A->size1 - 1);
+	gsl_matrix_scale(A, x);
+}
+
+/*____________________________________________________________________________*/
+/* compute covariance matrix C from input matrix A */
 void covariance(gsl_matrix *A, gsl_matrix *C)
 {
 	unsigned int i, j;

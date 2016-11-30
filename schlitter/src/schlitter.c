@@ -7,25 +7,46 @@ Copyright (C) 2016 Jens Kleinjung, Jamie MacPherson, Franca Fraternali
 #include "schlitter.h"
 
 /*____________________________________________________________________________*/
+/* print formatted GSL vector */
+int printf_gsl_vector(FILE *f, const gsl_vector *v)
+{
+	int status, n = 0;
+
+   	for (size_t i = 0; i < v->size; i++) {
+		for (size_t j = 0; j < 1; j++) {
+			if ((status = fprintf(f, "%g ", gsl_vector_get(v, i))) < 0)
+				return -1;
+			n += status;
+		}
+
+		if ((status = fprintf(f, "\n")) < 0)
+			return -1;
+		n += status;
+	}
+
+	return n;
+}
+
+/*____________________________________________________________________________*/
 /* print formatted GSL matrix */
 /* taken from https://gist.github.com/jmbr/668067 */
 int printf_gsl_matrix(FILE *f, const gsl_matrix *m)
 {
-    int status, n = 0;
+	int status, n = 0;
 
-    for (size_t i = 0; i < m->size1; i++) {
-        for (size_t j = 0; j < m->size2; j++) {
+   	for (size_t i = 0; i < m->size1; i++) {
+		for (size_t j = 0; j < m->size2; j++) {
 			if ((status = fprintf(f, "%g ", gsl_matrix_get(m, i, j))) < 0)
-                return -1;
-            n += status;
-        }
+				return -1;
+			n += status;
+		}
 
 		if ((status = fprintf(f, "\n")) < 0)
 			return -1;
-        n += status;
-    }
+		n += status;
+	}
 
-    return n;
+	return n;
 }
 
 /*____________________________________________________________________________*/
@@ -141,7 +162,7 @@ int main(int argc, char *argv[])
 				traj.nFrame, (3 * traj.frame[0].nAtom));	
 
 #ifdef DEBUG
-	trajOut = safe_open("traj.dat", "w");
+	trajOut = safe_open("debug_traj_C.dat", "w");
 	printf_gsl_matrix(trajOut, A);
 	fclose(trajOut);
 #endif
@@ -155,9 +176,36 @@ int main(int argc, char *argv[])
 									 (3 * traj.frame[0].nAtom));
 	covariance(A, C);
 
+    /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+	int tm[6][4] = {
+    {10, 11, 12, 13},
+    {14, 15, 13, 17},
+    {15, 16, 16, 18},
+    {13, 12, 12, 19},
+    {12, 13, 11, 17},
+    {10, 11, 10, 14}};
+
+	gsl_matrix *ta = gsl_matrix_alloc(6, 4);
+	for (i = 0; i < 6; ++ i) {
+		for (j = 0; j < 4; ++ j) {
+			gsl_matrix_set(ta, i, j, tm[i][j]);
+		}
+	}
+
+	gsl_matrix *tc = gsl_matrix_alloc(4, 4);
+
+	covariance(ta, tc);
+
+	FILE *cvOut = safe_open("tmp_covar_C.dat", "w");
+	printf_gsl_matrix(cvOut, tc);
+	fclose(cvOut);
+
+    /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
 #ifdef DEBUG
-	covarOut = safe_open("covar.dat", "w");
-	gsl_matrix_fprintf (covarOut, C,  "%lf");
+	covarOut = safe_open("debug_covar_C.dat", "w");
+	printf_gsl_matrix(covarOut, C);
+	//gsl_matrix_fprintf (covarOut, C,  "%lf");
 	fclose(covarOut);
 #endif
 
@@ -168,12 +216,14 @@ int main(int argc, char *argv[])
 	eigensystem(C, &eigensys);
 
 #ifdef DEBUG
-	eigenvalOut = safe_open("S_sch_eigenval_C.dat", "w");
-    gsl_vector_fprintf (eigenvalOut, eigensys.eigenval, "%f");
+	eigenvalOut = safe_open("debug_eigenval_C.dat", "w");
+	printf_gsl_vector(eigenvalOut, eigensys.eigenval);
+    //gsl_vector_fprintf (eigenvalOut, eigensys.eigenval, "%f");
 	fclose(eigenvalOut);
 
-	eigenvecOut = safe_open("S_sch_eigenvec_C.dat", "w");
-    gsl_matrix_fprintf(eigenvecOut, eigensys.eigenvec, "%f");
+	eigenvecOut = safe_open("debug_eigenvec_C.dat", "w");
+	printf_gsl_matrix(eigenvecOut, eigensys.eigenvec);
+    //gsl_matrix_fprintf(eigenvecOut, eigensys.eigenvec, "%f");
 	fclose(eigenvecOut);
 #endif
 

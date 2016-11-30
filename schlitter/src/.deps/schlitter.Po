@@ -80,11 +80,12 @@ schlitter.o: schlitter.c /usr/include/stdc-predef.h config.h schlitter.h \
  /usr/include/gsl/gsl_matrix_char.h /usr/include/gsl/gsl_vector_char.h \
  /usr/include/gsl/gsl_block_char.h /usr/include/gsl/gsl_const_mksa.h \
  arg.h /usr/include/getopt.h /usr/include/string.h /usr/include/xlocale.h \
- argpdb.h error.h covariance.h /usr/include/gsl/gsl_eigen.h \
- /usr/include/gsl/gsl_vector.h /usr/include/gsl/gsl_statistics_double.h \
- getpdb.h /usr/include/libgen.h /usr/include/regex.h modstring.h \
- /usr/include/ctype.h pdb_structure.h seq.h vector.h pattern.h safe.h \
- safe.h gettraj.h
+ argpdb.h error.h covariance.h /usr/include/gsl/gsl_blas.h \
+ /usr/include/gsl/gsl_vector.h /usr/include/gsl/gsl_blas_types.h \
+ /usr/include/gsl/gsl_cblas.h /usr/include/gsl/gsl_eigen.h \
+ /usr/include/gsl/gsl_statistics_double.h getpdb.h /usr/include/libgen.h \
+ /usr/include/regex.h modstring.h /usr/include/ctype.h pdb_structure.h \
+ seq.h vector.h pattern.h safe.h safe.h gettraj.h
 
 /usr/include/stdc-predef.h:
 
@@ -334,9 +335,15 @@ error.h:
 
 covariance.h:
 
-/usr/include/gsl/gsl_eigen.h:
+/usr/include/gsl/gsl_blas.h:
 
 /usr/include/gsl/gsl_vector.h:
+
+/usr/include/gsl/gsl_blas_types.h:
+
+/usr/include/gsl/gsl_cblas.h:
+
+/usr/include/gsl/gsl_eigen.h:
 
 /usr/include/gsl/gsl_statistics_double.h:
 
