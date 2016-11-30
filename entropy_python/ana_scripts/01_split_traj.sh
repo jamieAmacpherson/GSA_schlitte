@@ -6,8 +6,8 @@ then
 	exit 1
 fi
 
-schlitter='/Users/Jamie/jm.software/GSA_schlitte/entropy_python/src/schlitter.py'
-#mdconvert='/Users/Jamie/jm.software/GSA_schlitte/entropy_python/ana_scripts/mdconvert.py'
+schlitter='/home/macphej/jm.software/development/entropy/GSA_schlitte/entropy_python/src/schlitter.py'
+mdconvert='/home/macphej/jm.software/development/entropy/GSA_schlitte/entropy_python/ana_scripts/mdconvert.py'
 
 
 let k=$3
@@ -28,7 +28,7 @@ EOF
 
 mkdir $k
 cd $k
-python mdconvert ../trajout$k.xtc -o $k.dcd
+python $mdconvert ../trajout$k.xtc -o $k.dcd
 
  
 python $schlitter -t $k.dcd -s ../topol$k.pdb 
