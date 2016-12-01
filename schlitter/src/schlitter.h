@@ -20,6 +20,7 @@ Copyright (C) 2016 Jens Kleinjung, Jamie MacPherson, Franca Fraternali
 #include "error.h"
 #include "getpdb.h"
 #include "gettraj.h"
+#include "gsl_aux.h"
 #include "safe.h"
 #include "schlitter.h"
 
