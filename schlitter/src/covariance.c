@@ -37,7 +37,7 @@ void cov(gsl_matrix *A, gsl_matrix *C)
 		}
 	}
 #ifdef DEBUG
-	FILE *ceOut = safe_open("tmp_centre_C.dat", "w");
+	FILE *ceOut = safe_open("debug_centre_C.dat", "w");
 	printf_gsl_matrix(ceOut, Ac);
 	fclose(ceOut);
 #endif
@@ -46,10 +46,10 @@ void cov(gsl_matrix *A, gsl_matrix *C)
 		C = A x A */
 	/* the crossproduct 'DGEMM' in BLAS:
 		C := alpha * A x B + beta * C */
-	gsl_blas_dgemm(CblasConjTrans, CblasNoTrans, 1., Ac, Ac, 0., C);
+	gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1., Ac, Ac, 0., C);
 
 #ifdef DEBUG
-	FILE *croOut = safe_open("tmp_crossprod_C.dat", "w");
+	FILE *croOut = safe_open("debug_crossprod_C.dat", "w");
 	printf_gsl_matrix(croOut, C);
 	fclose(croOut);
 #endif
@@ -60,52 +60,11 @@ void cov(gsl_matrix *A, gsl_matrix *C)
 
 #ifdef DEBUG
 	fprintf(stderr, "\tcovariance scaling: %lf\n", x);
-	FILE *coOut = safe_open("tmp_covar_C.dat", "w");
+	FILE *coOut = safe_open("debug_covar_C.dat", "w");
 	printf_gsl_matrix(coOut, C);
 	fclose(coOut);
 #endif
-}
-
-/*____________________________________________________________________________*/
-/* compute covariance matrix C from input matrix A */
-void covariance(gsl_matrix *A, gsl_matrix *C)
-{
-	unsigned int i, j;
-	double covar = 0.;
-
-	/* compute coordinate mean values over trajectory time */
-	/* the vector has length 3N */
-	//gsl_vector *meancoor = gsl_vector_alloc(A->size1);
-	/* for each coordinate */
-	//for (i = 0; i < A->size1; ++ i) {
-		/* average over all saved time steps */
-	//	gsl_vector_view meancoor = gsl_matrix_column(A, i);
-	//	gsl_stats_mean(meancoor.vector.data, 1, A->size2); 
-	//}
-
-	/* compute the covariance matrix */
-	/* the vectors have length 'time steps' */
-	gsl_vector *ci = gsl_vector_alloc(A->size2);
-	gsl_vector *cj = gsl_vector_alloc(A->size2);
-
-	/* for each coordinate i */
-	for (i = 0; i < A->size1; ++ i) {
-		/* and each other coordinate j */
-		for (j = i; j < A->size2; ++ j) {
-			/* column vector view: reference to memory */
-			gsl_vector_view c_i = gsl_matrix_column(A, i);
-			gsl_vector_view c_j = gsl_matrix_column(A, j);
-			covar = gsl_stats_covariance(c_i.vector.data, 1, \
-										 c_j.vector.data, 1, \
-										 A->size2);
-			/* assign covariance to symmetric matrix elements */
-			gsl_matrix_set (C, i, j, covar);
-			gsl_matrix_set (C, j, i, covar);
-		}
-	}
-
-	gsl_vector_free(ci);
-	gsl_vector_free(cj);
+exit(1);
 }
 
 /*____________________________________________________________________________*/
