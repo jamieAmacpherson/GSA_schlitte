@@ -22,7 +22,7 @@ void cov(gsl_matrix *A, gsl_matrix *C)
 	gsl_matrix *Ac = gsl_matrix_alloc(A->size1, A->size2);
 	/* column vector has length 'time steps' */
 	gsl_vector *cj = gsl_vector_alloc(A->size2);
-	/* for all columns */
+	/* for all columns of 'A' */
 	for (j = 0; j < A->size2; ++ j) {
 		gsl_vector_view c_j = gsl_matrix_column(A, j);
 		/* compute column mean */
@@ -36,18 +36,34 @@ void cov(gsl_matrix *A, gsl_matrix *C)
 			gsl_matrix_set(Ac, i, j, gsl_matrix_get(A, i, j) - colmean);
 		}
 	}
+#ifdef DEBUG
+	FILE *ceOut = safe_open("tmp_centre_C.dat", "w");
+	printf_gsl_matrix(ceOut, Ac);
+	fclose(ceOut);
+#endif
 
-	/* 2. compute the cross product 'A x B' */
-	/* A x B: self-multiplication of A */
-	gsl_matrix *Bc = Ac;
-
+	/* 2. compute the covariance matrix 'C' from the cross-product:
+		C = A x A */
 	/* the crossproduct 'DGEMM' in BLAS:
-		C := alpha * op(A) * op(B) + beta * C */
-	gsl_blas_dgemm(CblasNoTrans, CblasTrans, 1., Ac, Bc, 0., C);
+		C := alpha * A x B + beta * C */
+	gsl_blas_dgemm(CblasConjTrans, CblasNoTrans, 1., Ac, Ac, 0., C);
 
-	/* 3. normalise with the 1/(NROW(A)-1) prefactor. */
-	const double x = 1 / (A->size1 - 1);
-	gsl_matrix_scale(A, x);
+#ifdef DEBUG
+	FILE *croOut = safe_open("tmp_crossprod_C.dat", "w");
+	printf_gsl_matrix(croOut, C);
+	fclose(croOut);
+#endif
+
+	/* 3. normalise cocariance matrix 'C' with the 1/(NROW(A)-1) prefactor. */
+	const double x = (double)1. / (Ac->size1 - (double)1.);
+	gsl_matrix_scale(C, x);
+
+#ifdef DEBUG
+	fprintf(stderr, "\tcovariance scaling: %lf\n", x);
+	FILE *coOut = safe_open("tmp_covar_C.dat", "w");
+	printf_gsl_matrix(coOut, C);
+	fclose(coOut);
+#endif
 }
 
 /*____________________________________________________________________________*/

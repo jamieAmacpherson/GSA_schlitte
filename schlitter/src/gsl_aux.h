@@ -11,6 +11,7 @@ Copyright (C) 2016 Jens Kleinjung, Jamie MacPherson, Franca Fraternali
 #include <gsl/gsl_matrix.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "config.h"
 
 int printf_gsl_vector(FILE *f, const gsl_vector *v);
 int printf_gsl_matrix(FILE *f, const gsl_matrix *m);

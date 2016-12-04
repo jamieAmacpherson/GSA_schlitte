@@ -7,6 +7,8 @@ Read the COPYING file for license information.
 #ifndef SEQ_H
 #define SEQ_H
 
+#include "config.h"
+
 /*____________________________________________________________________________*/
 /* sequence */
 typedef struct  

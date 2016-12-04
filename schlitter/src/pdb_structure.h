@@ -7,6 +7,7 @@ Read the COPYING file for license information.
 #ifndef PDB_STRUCTURE_H
 #define PDB_STRUCTURE_H
 
+#include "config.h"
 #include "seq.h"
 #include "vector.h"
 

@@ -14,7 +14,10 @@ cov2 = function(x)
 
 #_______________________________________________________________________________
 ## read trajectory
-dat = read.table("traj.dat");
+dat = read.table("debug_traj_C.dat");
+## scale trajectory
+dat.s = scale(dat, TRUE, FALSE);
+write.table(dat.s, file = "debug_scale_R.dat", quote = FALSE, col.names = FALSE, row.names = FALSE);
 ## covariance matrix
 dat.cov = cov(dat);
 write.table(dat.cov, file = "covar_R.dat", quote = FALSE, col.names = FALSE);

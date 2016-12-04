@@ -11,6 +11,9 @@ Read the COPYING file for license information.
 #include <gsl/gsl_eigen.h>
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_statistics_double.h>
+#include "config.h"
+#include "gsl_aux.h"
+#include "safe.h"
 
 typedef struct
 {

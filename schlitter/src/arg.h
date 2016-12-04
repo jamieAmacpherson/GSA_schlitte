@@ -15,6 +15,7 @@ Read the COPYING file for license information.
 #include <time.h>
 
 #include "argpdb.h"
+#include "config.h"
 #include "error.h"
 
 /*____________________________________________________________________________*/

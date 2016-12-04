@@ -131,40 +131,7 @@ int main(int argc, char *argv[])
 	if (! arg.silent) fprintf(stdout, "\nComputing covariance matrix, may take a minute ....\n");
 	gsl_matrix *C = gsl_matrix_alloc((3 * traj.frame[0].nAtom), \
 									 (3 * traj.frame[0].nAtom));
-	covariance(A, C);
-
-    /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-	int tm[6][4] = {
-    {10, 11, 12, 13},
-    {14, 15, 13, 17},
-    {15, 16, 16, 18},
-    {13, 12, 12, 19},
-    {12, 13, 11, 17},
-    {10, 11, 10, 14}};
-
-	gsl_matrix *ta = gsl_matrix_alloc(6, 4);
-	for (i = 0; i < 6; ++ i) {
-		for (j = 0; j < 4; ++ j) {
-			gsl_matrix_set(ta, i, j, tm[i][j]);
-		}
-	}
-
-	gsl_matrix *tc = gsl_matrix_alloc(4, 4);
-
-	covariance(ta, tc);
-
-	FILE *cvOut = safe_open("tmp_covar_C.dat", "w");
-	printf_gsl_matrix(cvOut, tc);
-	fclose(cvOut);
-
-    /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-
-#ifdef DEBUG
-	covarOut = safe_open("debug_covar_C.dat", "w");
-	printf_gsl_matrix(covarOut, C);
-	//gsl_matrix_fprintf (covarOut, C,  "%lf");
-	fclose(covarOut);
-#endif
+	cov(A, C);
 
     /*____________________________________________________________________________*/
 	/* compute eigenvalues */

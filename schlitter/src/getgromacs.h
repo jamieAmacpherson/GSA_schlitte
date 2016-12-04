@@ -14,6 +14,7 @@ Read the COPYING file for license information.
 #include <string.h>
 
 #include "arg.h"
+#include "config.h"
 #include "safe.h"
 
 int read_gromos_traj(Arg *arg, int protEnd);

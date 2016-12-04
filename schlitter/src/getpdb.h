@@ -15,6 +15,7 @@ Read the COPYING file for license information.
 
 #include "arg.h"
 #include "argpdb.h"
+#include "config.h"
 #include "error.h"
 #include "modstring.h"
 #include "pdb_structure.h"
