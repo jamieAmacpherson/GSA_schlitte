@@ -1,46 +1,46 @@
-# This file was created Tue Nov 15 17:58:32 2016
+# This file was created Mon Dec  5 16:59:59 2016
 # Created by:
-#                   :-) GROMACS - gmx covar, VERSION 5.1.1 (-:
+#                   :-) GROMACS - gmx covar, VERSION 5.1.2 (-:
 # 
-# Executable:   /opt/local/bin/gmx
-# Data prefix:  /opt/local
+# Executable:   /usr/bin/gmx
+# Data prefix:  /usr
 # Command line:
-#   gmx covar -f ../../test_trajectory/decaA_1.xtc -s ../../test_trajectory/decaA.pdb -mwa -ascii MW_covar.dat
+#   gmx covar -f ../../test_trajectory/decaA_1.xtc -s ../../test_trajectory/decaA.pdb -ascii
 # gmx covar is part of G R O M A C S:
 #
-# Gromacs Runs One Microsecond At Cannonball Speeds
+# Great Red Oystrich Makes All Chemists Sane
 #
 @    title "Eigenvalues of the covariance matrix"
 @    xaxis  label "Eigenvector index"
-@    yaxis  label "(u nm\S2\N)"
+@    yaxis  label "(nm\S2\N)"
 @TYPE xy
-         1 0.291199
-         2 0.0990812
-         3 0.0299812
-         4 0.02479
-         5 0.0220636
-         6 0.018039
-         7 0.0139998
-         8 0.0099502
-         9 0.00735439
-        10 0.00497375
-        11 0.00430519
-        12 0.00336366
-        13 0.00272319
-        14 0.00236151
-        15 0.00178881
-        16 0.00167108
-        17 0.000611672
-        18 0.000363508
-        19 0.000255397
-        20 0.000184276
-        21 0.000160509
-        22 0.000125353
-        23 0.000117137
-        24 9.80635e-05
-        25 2.30597e-08
-        26 7.31442e-09
-        27 4.34298e-09
-        28 9.5058e-10
-        29 -6.46956e-09
-        30 -8.68581e-09
+         1 0.0223672
+         2 0.00761051
+         3 0.00230288
+         4 0.00190414
+         5 0.00169472
+         6 0.00138559
+         7 0.00107534
+         8 0.000764284
+         9 0.000564897
+        10 0.000382038
+        11 0.000330686
+        12 0.000258366
+        13 0.000209171
+        14 0.00018139
+        15 0.0001374
+        16 0.000128357
+        17 4.69827e-05
+        18 2.79214e-05
+        19 1.96173e-05
+        20 1.41545e-05
+        21 1.23288e-05
+        22 9.62855e-06
+        23 8.99758e-06
+        24 7.53235e-06
+        25 2.28361e-09
+        26 3.53857e-10
+        27 9.01013e-11
+        28 -3.44357e-10
+        29 -6.16384e-10
+        30 -1.04063e-09

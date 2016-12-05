@@ -97,7 +97,7 @@ def covar(topology, trajectory):
 #    
     # the covariance matrix is calculated in square angstrom (1 angstrom^2 = 0.01 nm^2)
     covar.mat = mat * 0.01	# convert non-mass weighted covariance matrix from a^2 to nm^2  
-#    np.savetxt('covarmat_nonMW.dat', covar.mat)
+    np.savetxt('covarmat_nonMW.dat', covar.mat)
 #    
     # Mass-weight the covariance matrix, this involves a simple factoring of each of the elements
     # by the atomic mass unit of carbon and hydrogen. The resulting units are covariance in: AMU*nm^2

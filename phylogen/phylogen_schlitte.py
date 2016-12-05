@@ -78,35 +78,37 @@ getbipart(t)
 
 
 def matchnewicks(alignment):
-	# for each of the bipartitions import the sequence header, match it to the aligned sequence and save that
+	# for each of the bipartitions import the sequence header,
+	# match it to the aligned sequence and save that
 	# sequence as a dataframe
-	bpheaders = {}
-	for filename in glob.glob('*.seq'):
-		f_contents = open(filename, 'r').read()
-		bpheaders[filename] = f_contents
+	# Import the alignment file and save as a tmp object
+	fastatmp = open(alignment, 'r').read().splitlines()
+        # Remove double spaces from tmp alignment file
+	fastatmp2 = [x.strip('  ') for x in fastatmp]
+        # Replace underscore with single space in sequence headers
+	fastatmp3 = [w.replace('_', ' ') for w in fastatmp2]
+	# Remove '>' from the begining of each sequence header
+	# in the alignment file.
+	matchnewicks.fasta = [w.replace('>', '') for w in fastatmp3]	
+	#
+	matchnewicks.bpheaders = {}
+	# Import bipartition sequence headers into a dictionary
+	# maintaining the hierarchy within the tree topology (ie.
+	# 1.seq corresponds to common ancestral sequence and n.seq
+	# corresponds to the header sequence 
+	for filename in glob.glob('*.inseq'):
+		f_contents = open(filename, 'r').read().strip().splitlines()
+		matchnewicks.bpheaders[filename] = f_contents
+	#
+	#  
+		for seq, headers in matchnewicks.bpheaders.iteritems():
+			matchnewicks.result=[]
+			for header in headers:
+				for i, element in enumerate(matchnewicks.fasta):
+					if header in element:
+						matchnewicks.result.append(matchnewicks.fasta[i+1])
+				for filename in matchnewicks.bpheaders:
+					matchnewicks.bpheaders[filename] = headers, matchnewicks.result
 
-
-
-def matchnewicks(newicks, alignment):
-	with open(newicks) as f:
-		matchnewicks.seqhead = f.read().splitlines()
-	matchnewicks.headers=[]
-	# split sequence headers up into a dictionary of lists
-	for line in range(0,9):	  # find a way to count the number of lines so that I dont hard-code the range
-		matchnewicks.headers.append(matchnewicks.seqhead[line].split('  '))
-	# match sequence headers to fasta sequence
-	fastaws = open(alignment, 'r').read().splitlines()
-	matchnewicks.fastaus = [x.strip('  ') for x in fastaws]
-	matchnewicks.fasta = [w.replace('_', ' ') for w in matchnewicks.fastaus]
-	for partition in matchnewicks.headers:
-		for headers in partition:
-			if headers in matchnewicks.fasta:
-				for sequence in matchnewicks.fasta:
-					print sequence
-
-
-
-matchnewicks('human_newicks.dat', 'alignment_file.fasta')
-
-
+matchnewicks(a)
 
