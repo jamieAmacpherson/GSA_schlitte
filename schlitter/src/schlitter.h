@@ -10,6 +10,7 @@ Copyright (C) 2016 Jens Kleinjung, Jamie MacPherson, Franca Fraternali
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_const_mksa.h>
+#include <gsl/gsl_const_num.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -20,6 +21,7 @@ Copyright (C) 2016 Jens Kleinjung, Jamie MacPherson, Franca Fraternali
 #include "error.h"
 #include "getpdb.h"
 #include "gettraj.h"
+#include "gsl_aux.h"
 #include "safe.h"
 #include "schlitter.h"
 

@@ -7,6 +7,7 @@ Copyright (C) 2016 Jens Kleinjung, Jamie MacPherson, Franca Fraternali
 #include "schlitter.h"
 
 /*____________________________________________________________________________*/
+<<<<<<< HEAD
 /* print formatted GSL vector */
 int printf_gsl_vector(FILE *f, const gsl_vector *v)
 {
@@ -50,6 +51,8 @@ int printf_gsl_matrix(FILE *f, const gsl_matrix *m)
 }
 
 /*____________________________________________________________________________*/
+=======
+>>>>>>> 9c9ea52cc0eeb67c41732fedcd5d1f9b7e62167d
 /* compute entropy via Schlitter formula */
 /* S >= S' = 1/2 k_B ln det[1 + (k_B T e^2 / h_bar^2) M covar] */
 /* with S:entropy; k_B:Boltzmann k; T:Temperature; e:Euler e; h:Planck h;
@@ -61,39 +64,52 @@ int printf_gsl_matrix(FILE *f, const gsl_matrix *m)
 /* more units: The atomic mass is that of a unified C$^{\alpha}$H:
 	13.01864 au converted to kg.
 	The distance is given is nm units and converted to m. */
-__inline__ static double schlitter(Eigensys *eigensys)
+__inline__ static double schlitter(Eigensys *eigensys, int nFrame)
 {
 	unsigned int i;
 	FILE *outFile;
 	FILE *csoutFile;
 	double S_sch = 0.; /* Schlitter entropy per eigenvalue */
 	double S_sch_cumsum = 0.; /* cumulative sum of Schlitter entropy */
-	const double k_B = GSL_CONST_MKSA_BOLTZMANN; /* J K^{-1} */
+	const double k_B = (double)GSL_CONST_MKSA_BOLTZMANN; /* J K^{-1} */
 	const double T = 300; /* K */
 	const double e_sq = pow(M_E, 2);
-	const double h_bar_sq = pow(GSL_CONST_MKSA_PLANCKS_CONSTANT_HBAR, 2); /* J s */
+	const double h_bar_sq = pow((double)GSL_CONST_MKSA_PLANCKS_CONSTANT_HBAR, 2); /* J s */
 	const double prefr = k_B * T * e_sq / h_bar_sq; /* kg^{-1} m^{-2} */
 	const double m_CH = 13.01864; /* mass of unified C$^{\alpha}$H in au units */
 	/* unified atomic mass: conversion factor from au to kg */
-	const double cf_au_kg = GSL_CONST_MKSA_UNIFIED_ATOMIC_MASS;
+	const double cf_au_kg = (double)GSL_CONST_MKSA_UNIFIED_ATOMIC_MASS;
 	const double cf_nmsq_msq = 1e-18; /* conversion factor from nm^2 to m^2 */
+	const double Nav = (double)GSL_CONST_NUM_AVOGADRO;
 	double ev = 0.;
+	double logterm;
 
 	outFile = safe_open("S_sch_C.dat", "w");
 	csoutFile = safe_open("S_sch_cumsum_C.dat", "w");
 
 	/* assuming eigenvalues are ordered;
-		skip the 6 d.o.f. of rigid body rotation/translation */
-	for (i = 0; i < eigensys->eigendim - 6; ++ i) {
+		Skip the 6 d.o.f. of rigid body rotation/translation
+		plus any whose rank is >= the number of time points.
+		For example, 100 time points can only paramtrise 100 coordinates */
+	
+	logterm = prefr * cf_au_kg * m_CH * cf_nmsq_msq;
+	for (i = 0, S_sch = 0, S_sch_cumsum = 0; (i < eigensys->eigendim - 6) && (i < nFrame - 6); ++ i) {
 		ev = gsl_vector_get(eigensys->eigenval, i);
 		if (ev > 0) {
-			S_sch = 0.5 * k_B * log(1 + (prefr * \
-					  cf_au_kg * m_CH * \
-					  ev * cf_nmsq_msq));
-			fprintf(outFile, "%d\t%lf\n", i, S_sch);
+			S_sch = Nav * 0.5 * k_B * log(1 + (logterm * ev));
+#ifdef DEBUG
+			fprintf(outFile, "%d\t%lf\t%lf\t%lf\t%e\n",
+						i,
+						logterm,
+						logterm * ev,
+						log(1 + (logterm * ev)),
+						S_sch);
+#else
+			fprintf(outFile, "%d\t%e\n",
+#endif
 
 			S_sch_cumsum += S_sch;
-			fprintf(csoutFile, "%d\t%lf\n", i, S_sch);
+			fprintf(csoutFile, "%d\t%e\n", i, S_sch_cumsum);
 		} else {
 			break;
 		}
@@ -101,6 +117,11 @@ __inline__ static double schlitter(Eigensys *eigensys)
 
 	fclose(outFile);
 	fclose(csoutFile);
+
+	fprintf(stdout, "\tEntropy computation for %d time points\n",
+				GSL_MIN((eigensys->eigendim - 6), (nFrame - 6)));
+
+	return S_sch_cumsum;
 }
 
 /*____________________________________________________________________________*/
@@ -141,10 +162,12 @@ int main(int argc, char *argv[])
 	}
 
     /*____________________________________________________________________________*/
-	/* create trajectory GSL matrix;
-		in each row: x1,y1,z1,x2,y2,z2,...
-		in each column: t1,t2,... */
-	/* trajectory matrix */
+	/* create trajectory GSL matrix */
+	/* matrix order: time along row dimension, coordinates along column direction: */
+	/* x1(t1) y1(t1) z1(t1) x2(t1) y2(t1) z2(t1) ... zn(t1)
+	   x1(t2) y1(t2) z1(t2) x2(t2) y2(t2) z2(t2) ... zn(t2)
+	   ...
+	   x1(tn) y1(tn) z1(tn) x2(tn) y2(tn) z2(tn) ... zn(tn) */
 	if (! arg.silent) fprintf(stdout, "\nCreating trajectory matrix\n");
 	gsl_matrix *A = gsl_matrix_alloc(traj.nFrame,
 									(3 * traj.frame[0].nAtom));
@@ -174,6 +197,7 @@ int main(int argc, char *argv[])
 	if (! arg.silent) fprintf(stdout, "\nComputing covariance matrix, may take a minute ....\n");
 	gsl_matrix *C = gsl_matrix_alloc((3 * traj.frame[0].nAtom), \
 									 (3 * traj.frame[0].nAtom));
+<<<<<<< HEAD
 	covariance(A, C);
 
     /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
@@ -208,6 +232,12 @@ int main(int argc, char *argv[])
 	//gsl_matrix_fprintf (covarOut, C,  "%lf");
 	fclose(covarOut);
 #endif
+=======
+	/* matrix C holds the covariance of matrix A */
+	/* matrix order of A: see above */
+	/* matrix order of C: square with coordinates in row and matrix dimension */
+	cov(A, C);
+>>>>>>> 9c9ea52cc0eeb67c41732fedcd5d1f9b7e62167d
 
     /*____________________________________________________________________________*/
 	/* compute eigenvalues */
@@ -230,9 +260,9 @@ int main(int argc, char *argv[])
     /*____________________________________________________________________________*/
 	/* Schlitter entropy calculation */
 	if (! arg.silent) fprintf(stdout, "\nEvaluating Schlitter entropy\n");
-	S_sch = schlitter(&eigensys);
+	S_sch = schlitter(&eigensys, traj.nFrame);
 
-	fprintf(stdout, "Schlitter entropy: %e\n", S_sch);
+	fprintf(stdout, "Schlitter entropy: %e J / (mol K)\n", S_sch);
 
     /*____________________________________________________________________________*/
 	/** free memory */

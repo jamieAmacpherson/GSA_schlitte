@@ -13,6 +13,7 @@ Read the COPYING file for license information.
 #include <stdlib.h>
 #include <string.h>
 
+#include "config.h"
 #include "getpdb.h"
 #include "pdb_structure.h"
 #include "safe.h"

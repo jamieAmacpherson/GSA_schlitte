@@ -104,9 +104,9 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_schlitter_OBJECTS = arg.$(OBJEXT) error.$(OBJEXT) \
-	covariance.$(OBJEXT) getpdb.$(OBJEXT) gettraj.$(OBJEXT) \
-	modstring.$(OBJEXT) pattern.$(OBJEXT) safe.$(OBJEXT) \
-	schlitter.$(OBJEXT) vector.$(OBJEXT)
+	covariance.$(OBJEXT) getpdb.$(OBJEXT) gsl_aux.$(OBJEXT) \
+	gettraj.$(OBJEXT) modstring.$(OBJEXT) pattern.$(OBJEXT) \
+	safe.$(OBJEXT) schlitter.$(OBJEXT) vector.$(OBJEXT)
 schlitter_OBJECTS = $(am_schlitter_OBJECTS)
 schlitter_DEPENDENCIES =
 AM_V_P = $(am__v_P_@AM_V@)
@@ -258,7 +258,7 @@ top_srcdir = @top_srcdir@
 AM_CXXFLAGS = $(INTI_CFLAGS)
 schlitter_SOURCES = \
 arg.c arg.h argpdb.h config.h error.c error.h \
-covariance.c covariance.h getpdb.c getpdb.h \
+covariance.c covariance.h getpdb.c getpdb.h gsl_aux.c gsl_aux.h \
 gettraj.c gettraj.h modstring.c modstring.h pattern.c pattern.h \
 pdb_structure.h safe.c safe.h schlitter.c schlitter.h \
 seq.h vector.c vector.h
@@ -374,6 +374,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/error.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/getpdb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gettraj.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsl_aux.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/modstring.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pattern.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/safe.Po@am__quote@

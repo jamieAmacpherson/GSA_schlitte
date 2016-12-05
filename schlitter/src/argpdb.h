@@ -7,6 +7,8 @@ Read the COPYING file for license information.
 #ifndef ARGPDB_H
 #define ARGPDB_H
 
+#include "config.h"
+
 /*____________________________________________________________________________*/
 /* structures */
 typedef struct { 

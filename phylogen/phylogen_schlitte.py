@@ -21,6 +21,8 @@ import os.path
 import sys
 import os
 import numpy as np
+import fnmatch
+import glob
 #____________________________________________________________________________
 # Parse commandline arguments
 #____________________________________________________________________________
@@ -53,6 +55,7 @@ args = parser.parse_args()
 t = 'consensus.tree'
 a = 'C1.P1.initial.fasta'
 
+# Link the phylogenetic tree to fasta sequences 
 def itree(tree, alignment):
 	itree.taxa = dendropy.TaxonNamespace()
 	itree.tree = dendropy.Tree.get(path=tree, schema="Newick", taxon_namespace=itree.taxa)
@@ -60,15 +63,29 @@ def itree(tree, alignment):
 
 itree(t,a)
 
+# Extract bipartitions
 def getbipart(tree):
 	getbipart.biparts=[]
+	# extract bipartitions in the tree and append to empty list
 	for node in itree.tree:
 		getbipart.biparts.append(node.edge.bipartition.leafset_taxa(itree.taxa))
+	# save the list of tree bipartitions to a txt file
 	np.savetxt('bipartition.dat', getbipart.biparts, delimiter='', fmt="%s")
 	os.system('chmod +wx format_newick.sh')
 	os.system('./format_newick.sh')
 
 getbipart(t)
+
+
+def matchnewicks(alignment):
+	# for each of the bipartitions import the sequence header, match it to the aligned sequence and save that
+	# sequence as a dataframe
+	bpheaders = {}
+	for filename in glob.glob('*.seq'):
+		f_contents = open(filename, 'r').read()
+		bpheaders[filename] = f_contents
+
+
 
 def matchnewicks(newicks, alignment):
 	with open(newicks) as f:
