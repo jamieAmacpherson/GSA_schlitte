@@ -64,7 +64,6 @@ void cov(gsl_matrix *A, gsl_matrix *C)
 	printf_gsl_matrix(coOut, C);
 	fclose(coOut);
 #endif
-exit(1);
 }
 
 /*____________________________________________________________________________*/

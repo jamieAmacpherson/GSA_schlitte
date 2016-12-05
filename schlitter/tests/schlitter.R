@@ -30,8 +30,8 @@ write.table(dat.cov, file = "debug_covar_R.dat", quote = FALSE, col.names = FALS
 
 ## eigen system
 dat.eigen =  eigen(dat.cov);
-write.table(dat.eigen$value, file = "S_sch_eigenval_R.dat", quote = FALSE, col.names = FALSE);
-write.table(dat.eigen$vector, file = "S_sch_eigenvec_R.dat", quote = FALSE, col.names = FALSE);
+write.table(dat.eigen$value, file = "debug_eigenval_R.dat", quote = FALSE, col.names = FALSE);
+write.table(dat.eigen$vector, file = "debug_eigenvec_R.dat", quote = FALSE, col.names = FALSE);
 
 #_______________________________________________________________________________
 ## Schlitter entropy
@@ -48,12 +48,15 @@ m_CH = 13.01864; # mass of unified C$^{\alpha}$H in au units
 ## unified atomic mass: conversion factor from au to kg
 cf_au_kg = physcon$"value"[physcon$"name" %in% "GSL_CONST_MKSA_UNIFIED_ATOMIC_MASS"];
 cf_nmsq_msq = 1e-18; # conversion factor from nm^2 to m^2
+Nav = physcon$"value"[physcon$"name" %in% "GSL_CONST_NUM_AVOGADRO"];
 
 ## if trajectory too short, eigen values will be under-determined
-eval_lim = min(length(dat.eigen$values), dim(dat)[1]);
+## in any case remove last 6 eigenvalues (= rigid body transformations)
+eval_lim = min(length(dat.eigen$values) - 6, dim(dat)[1] - 6);
 S_sch = vector("numeric", length = eval_lim);
+logterm = prefr *  cf_au_kg * m_CH * cf_nmsq_msq;
 S_sch = sapply(dat.eigen$values[1:eval_lim], function(x) {
-		return(log(1 + (prefr *  cf_au_kg * m_CH * x * cf_nmsq_msq)));
+		return(Nav * 0.5 * k_B * log(1 + (1 + (logterm * x))));
 	}
 )
 write.table(S_sch, file = "S_sch_R.dat", quote = FALSE, col.names = FALSE);
