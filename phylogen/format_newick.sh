@@ -13,3 +13,8 @@ while read -r filename content ; do
     done < human_newicks.dat
 
 sed 's/>//' P1-initial.fasta > alignment_file.fasta
+
+for file in *.seq
+do
+            sed 's/  /\n/g' $file > $file".inseq"
+done
