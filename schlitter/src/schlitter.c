@@ -7,52 +7,6 @@ Copyright (C) 2016 Jens Kleinjung, Jamie MacPherson, Franca Fraternali
 #include "schlitter.h"
 
 /*____________________________________________________________________________*/
-<<<<<<< HEAD
-/* print formatted GSL vector */
-int printf_gsl_vector(FILE *f, const gsl_vector *v)
-{
-	int status, n = 0;
-
-   	for (size_t i = 0; i < v->size; i++) {
-		for (size_t j = 0; j < 1; j++) {
-			if ((status = fprintf(f, "%g ", gsl_vector_get(v, i))) < 0)
-				return -1;
-			n += status;
-		}
-
-		if ((status = fprintf(f, "\n")) < 0)
-			return -1;
-		n += status;
-	}
-
-	return n;
-}
-
-/*____________________________________________________________________________*/
-/* print formatted GSL matrix */
-/* taken from https://gist.github.com/jmbr/668067 */
-int printf_gsl_matrix(FILE *f, const gsl_matrix *m)
-{
-	int status, n = 0;
-
-   	for (size_t i = 0; i < m->size1; i++) {
-		for (size_t j = 0; j < m->size2; j++) {
-			if ((status = fprintf(f, "%g ", gsl_matrix_get(m, i, j))) < 0)
-				return -1;
-			n += status;
-		}
-
-		if ((status = fprintf(f, "\n")) < 0)
-			return -1;
-		n += status;
-	}
-
-	return n;
-}
-
-/*____________________________________________________________________________*/
-=======
->>>>>>> 9c9ea52cc0eeb67c41732fedcd5d1f9b7e62167d
 /* compute entropy via Schlitter formula */
 /* S >= S' = 1/2 k_B ln det[1 + (k_B T e^2 / h_bar^2) M covar] */
 /* with S:entropy; k_B:Boltzmann k; T:Temperature; e:Euler e; h:Planck h;
@@ -197,47 +151,10 @@ int main(int argc, char *argv[])
 	if (! arg.silent) fprintf(stdout, "\nComputing covariance matrix, may take a minute ....\n");
 	gsl_matrix *C = gsl_matrix_alloc((3 * traj.frame[0].nAtom), \
 									 (3 * traj.frame[0].nAtom));
-<<<<<<< HEAD
-	covariance(A, C);
-
-    /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-	int tm[6][4] = {
-    {10, 11, 12, 13},
-    {14, 15, 13, 17},
-    {15, 16, 16, 18},
-    {13, 12, 12, 19},
-    {12, 13, 11, 17},
-    {10, 11, 10, 14}};
-
-	gsl_matrix *ta = gsl_matrix_alloc(6, 4);
-	for (i = 0; i < 6; ++ i) {
-		for (j = 0; j < 4; ++ j) {
-			gsl_matrix_set(ta, i, j, tm[i][j]);
-		}
-	}
-
-	gsl_matrix *tc = gsl_matrix_alloc(4, 4);
-
-	covariance(ta, tc);
-
-	FILE *cvOut = safe_open("tmp_covar_C.dat", "w");
-	printf_gsl_matrix(cvOut, tc);
-	fclose(cvOut);
-
-    /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-
-#ifdef DEBUG
-	covarOut = safe_open("debug_covar_C.dat", "w");
-	printf_gsl_matrix(covarOut, C);
-	//gsl_matrix_fprintf (covarOut, C,  "%lf");
-	fclose(covarOut);
-#endif
-=======
 	/* matrix C holds the covariance of matrix A */
 	/* matrix order of A: see above */
 	/* matrix order of C: square with coordinates in row and matrix dimension */
 	cov(A, C);
->>>>>>> 9c9ea52cc0eeb67c41732fedcd5d1f9b7e62167d
 
     /*____________________________________________________________________________*/
 	/* compute eigenvalues */
