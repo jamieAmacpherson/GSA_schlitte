@@ -97,18 +97,19 @@ def matchnewicks(alignment):
 	# 1.seq corresponds to common ancestral sequence and n.seq
 	# corresponds to the header sequence 
 	for filename in glob.glob('*.inseq'):
+		print filename
 		f_contents = open(filename, 'r').read().strip().splitlines()
 		matchnewicks.bpheaders[filename] = f_contents
 	#
 	#  
-		for seq, headers in matchnewicks.bpheaders.iteritems():
-			matchnewicks.result=[]
+		for inseq, headers in matchnewicks.bpheaders.iteritems():
+			sequences=[]
 			for header in headers:
 				for i, element in enumerate(matchnewicks.fasta):
 					if header in element:
-						matchnewicks.result.append(matchnewicks.fasta[i+1])
+						sequences.append(matchnewicks.fasta[i+1])
 				for filename in matchnewicks.bpheaders:
-					matchnewicks.bpheaders[filename] = headers, matchnewicks.result
+					matchnewicks.bpheaders[filename] = headers, sequences
 
 matchnewicks(a)
 
