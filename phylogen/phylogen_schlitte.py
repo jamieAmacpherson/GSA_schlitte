@@ -23,6 +23,7 @@ import os
 import numpy as np
 import fnmatch
 import glob
+import json
 #____________________________________________________________________________
 # Parse commandline arguments
 #____________________________________________________________________________
@@ -89,27 +90,33 @@ def matchnewicks(alignment):
 	fastatmp3 = [w.replace('_', ' ') for w in fastatmp2]
 	# Remove '>' from the begining of each sequence header
 	# in the alignment file.
-	matchnewicks.fasta = [w.replace('>', '') for w in fastatmp3]	
+	fasta = [w.replace('>', '') for w in fastatmp3]	
 	#
-	matchnewicks.bpheaders = {}
+	bpheaders = {}
 	# Import bipartition sequence headers into a dictionary
 	# maintaining the hierarchy within the tree topology (ie.
 	# 1.seq corresponds to common ancestral sequence and n.seq
 	# corresponds to the header sequence 
 	for filename in glob.glob('*.inseq'):
+		print "Fishing out the protein sequences for the following bipartition:"
 		print filename
+		#
+		# open bipartition sequence headers	
 		f_contents = open(filename, 'r').read().strip().splitlines()
-		matchnewicks.bpheaders[filename] = f_contents
-	#
-	#  
-		for inseq, headers in matchnewicks.bpheaders.iteritems():
-			sequences=[]
+		bpheaders[filename] = f_contents
+		print f_contents
+		#
+		for inseq, headers in bpheaders.iteritems():
+			sequences = []
 			for header in headers:
-				for i, element in enumerate(matchnewicks.fasta):
+				for i, element in enumerate(fasta):
 					if header in element:
-						sequences.append(matchnewicks.fasta[i+1])
-				for filename in matchnewicks.bpheaders:
-					matchnewicks.bpheaders[filename] = headers, sequences
+						sequences.append(fasta[i+1])
+		#bpheaders[filename] = sequences
+		print sequences
+		json.dump(sequences, open('%s.bipartitionseq.fasta' % filename, 'wb'))
+
 
 matchnewicks(a)
+
 
