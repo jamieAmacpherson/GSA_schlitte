@@ -123,11 +123,62 @@ def matchnewicks(alignment):
 matchnewicks(a)
 
 
-def alignbipart(bipartition_seqs):
+def readalignment(bipartition_seqs):
 	for dirname in glob.glob('*_dir'):
 		aligned = Bio.AlignIO.read(open(bipartition_seqs), "fasta")
+	#	
+		def gap_consensus(self, threshold=.7, ambiguous="X",
+                   require_multiple=0):
+		    """Same as dumb_consensus(), but allows gap on the output. 
 
-
+		    Things to do: 
+		        - Let the user define that with only one gap, the result 
+		          character in consensus is gap. 
+		        - Let the user select gap character, now 
+		          it takes the same as input. 
+		    """ 
+		    # Iddo Friedberg, 1-JUL-2004: changed ambiguous default to "X" 
+		    consensus = '' 
+		#
+		    # find the length of the consensus we are creating 
+		    con_len = self.alignment.get_alignment_length() 
+		#
+		    # go through each seq item 
+		    for n in range(con_len): 
+		        # keep track of the counts of the different atoms we get 
+		        atom_dict = {} 
+		        num_atoms = 0 
+		#
+		        for record in self.alignment: 
+		            # make sure we haven't run past the end of any sequences 
+		            # if they are of different lengths 
+		            if n < len(record.seq): 
+		                if record.seq[n] not in atom_dict: 
+		                    atom_dict[record.seq[n]] = 1 
+		                else:    
+		                    atom_dict[record.seq[n]] += 1 
+		#
+		                num_atoms += 1 
+#
+		        max_atoms = [] 
+    		    max_size = 0 
+#
+#
+        		for atom in atom_dict: 
+		            if atom_dict[atom] > max_size: 
+		                max_atoms = [atom] 
+		                max_size = atom_dict[atom] 
+        		    elif atom_dict[atom] == max_size: 
+		                max_atoms.append(atom) 
+#
+		        if require_multiple and num_atoms == 1: 
+		            consensus += ambiguous 
+		        elif (len(max_atoms) == 1) and ((float(max_size) / 
+                                         float(num_atoms)) >= threshold):
+		            consensus += max_atoms[0] 
+		        else:    
+		            consensus += ambiguous 
+                                            
 
 
 
